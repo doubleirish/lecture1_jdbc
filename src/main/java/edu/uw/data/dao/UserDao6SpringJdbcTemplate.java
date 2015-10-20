@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import edu.uw.data.model.Phone;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,7 +20,13 @@ import java.util.*;
 
 
 /**
- * simple single-table Jdbc example with try-resources and datasource
+ * Spring JdbcTemplates eliminate low level boilerplate like Connections and prepareStaments,
+ * JdbcTemplates also assist with avoiding the explict handing of checked exceptions
+ *
+ * the use of Spring Jdbc templates is a significant step up from raw JDBC.
+ *
+ * Modern Production code would tend to favour the use of Hibernate or Mybatis,
+ * but JdbcTemplates are still used quite often in Test data setups in tests
  */
 public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements UserDao {
 
@@ -37,9 +44,53 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
   }
 
 
+  public List<User> listUsers_withOneOffMapping() {
+
+    List<User> users = new ArrayList<>();
+    String sql =
+        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since FROM Users u ORDER BY u.id ";
+
+    List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+
+    for (Map row : rows) {
+      log.debug("ROW: "+row);
+
+      User user = new User();
+      user.setId(Integer.parseInt(String.valueOf(row.get("ID"))));
+      user.setLastName((String)  row.get("LASTNAME"));  // mapping by column name instead of index is a lot less fragileand buggy
+      user.setFirstName((String) row.get("FIRSTNAME"));
+      user.setUserName((String)  row.get("USERNAME"));
+      user.setActiveSince((Date) row.get("ACTIVE_SINCE"));
+
+      users.add(user);
+    }
+
+    return users;
+  }
+
+
+  /**
+   * if we have multiple queries e.g findUserByLastname() or findUserByActiveSince()
+   * we may find the the mapping from the row to the user is basically the same each time
+   * we can factor out this common row-object mapping into a call where it can be easily reused.
+   *
+   * this this especially useful if new columns get added as it means updating just the RowMapper class
+   * instead of multiple queries.
+   *
+   */
+  public List<User> listUsers_WithReusableMapping () {
+      String sql =
+          "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since FROM Users u ORDER BY u.id ";
+      List<User> users = jdbcTemplate.query(sql,new UserRowMapper());
+      return users;
+    }
+
+
+   /* CRUD using Spring Jdbc Templates*/
 
   @Override
   public void createUser(User user) {
+    // TODO no boilerplate setup
     String sql = "INSERT INTO USERS  " +
             "(USERNAME, firstname, lastname, ACTIVE_SINCE) " +
             "VALUES (?, ?, ?,?)";
@@ -47,15 +98,15 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
         user.getFirstName(),
         user.getLastName(),
         user.getActiveSince());
+    // TODO no boilerplate teardown or exception handling
   }
 
   @Override
   public User readUser(Integer id) {
-    User user = null;
-    Object[] args = {id};
-
-    String sql = "select * from USERS where id= ?" ;
-    List<User>   userList = jdbcTemplate.query(sql,args, new UserRowMapper()); //queryForObject throw ex if not found
+    User user=null;
+    List<User>   userList = jdbcTemplate.query("select * from USERS where id= ?",
+        new Object[]{id},
+        new UserRowMapper());
     if (!userList.isEmpty()) {
       user = userList.get(0);
     }
@@ -135,8 +186,8 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
 
     String sql = "UPDATE user set firstname = :first ,lastname = :last where id = :id";
     Map<String, Object> map = ImmutableMap.of("first", user.getFirstName(),
-                                               "last", user.getLastName(),
-                                                 "id", user.getId());
+        "last", user.getLastName(),
+        "id", user.getId());
 
     jdbcTemplate.update(sql,map);
   }
@@ -146,34 +197,12 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
 
 
 
-  public List<User> listUsers() {
 
-    List<User> users = new ArrayList<>();
-    String sql =
-        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since FROM Users u ORDER BY u.id ";
-
-    List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
-
-    for (Map row : rows) {
-      log.debug("ROW: "+row);
-
-      User user = new User();
-      user.setId(Integer.parseInt(String.valueOf(row.get("ID"))));
-      user.setLastName((String)  row.get("LASTNAME"));  //
-      user.setFirstName((String) row.get("FIRSTNAME"));
-      user.setUserName((String)  row.get("USERNAME"));
-      user.setActiveSince((Date) row.get("ACTIVE_SINCE"));
-
-      users.add(user);
-    }
-
-    return users;
-  }
 
 
 
   public List<User> findAll() {
-
+    // remember our attempt to map one-to-many relationships using the UserDao5OneTomany class
     List<User> users = new ArrayList<>();
     String sql =
         "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since \n" +
@@ -227,6 +256,9 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
     return users;
   }
 
+  // if we have lots of queries that all map user results in the same wasy
+  //then we can factor this row-to-object mapping logic into common code
+  // that can be used in multiple places.
   public class UserRowMapper implements RowMapper<User> {
 
     @Override

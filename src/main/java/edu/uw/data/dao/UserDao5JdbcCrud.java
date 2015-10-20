@@ -27,7 +27,7 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
 
 
 
-
+   /* A user has one address and many phones , save this to a database*/
   public void createUser (User user) {
     String sqlAddr  = "INSERT INTO ADDRESS(STREET, CITY, STATE, ZIP) VALUES (?,?,?,?)";
     String sqlUsers = "INSERT INTO USERS(USERNAME, FIRSTNAME, LASTNAME, ACTIVE_SINCE,ADDRESS_ID) VALUES (?,?,?,?,?)";
@@ -40,12 +40,11 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
         PreparedStatement psPhone = connection.prepareStatement(sqlPhone)
     ) {
 
-//
       try {
 
 
         //
-        //create address if needed
+        //address is optional so create an address object if needed
         //
         Address address = user.getAddress();
         if (address != null && address.getStreet() != null) {
@@ -95,13 +94,10 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
           }
         }
 
-        // find id of new user using search
+        // find the id of the newly created user in the database via a query
         if (user.getId() == null) {
           user.setId(findUserIdByUsername(user.getUserName()));
         }
-
-
-
 
 
         //
@@ -109,7 +105,6 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
         //
         Set<Phone> phones = user.getPhoneNumbers();
         for (Phone phone : phones) {
-
           psPhone.setInt(1, user.getId());
           psPhone.setString(2, phone.getLabel());
           psPhone.setString(3, phone.getNumber());
