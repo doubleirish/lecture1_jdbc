@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
-                                   "classpath:/datasource-production.xml"})
+    "classpath:/datasource-client-test.xml"})
 
 public class UserDao6Spring_BAD_Test extends AbstractJUnit4SpringContextTests {
 
@@ -42,7 +42,7 @@ private UserDao userDao;
 
 
   @Test
-  public void createUser()    { // TODO This test will fail ,see tx and embedded tests for right way
+  public void createUser()    { // TODO This test will sometimes fail ,see tx and embedded tests for right way
     User user = new User();
     String expectedUserName = "btest";
     user.setUserName(expectedUserName);
@@ -97,7 +97,7 @@ private UserDao userDao;
 
 
   @Test
-  public void deleteTempUser()    { // TODO This test will fail ,see tx and embedded tests for right way
+  public void deleteTempUser()    { // TODO This test will sometimes fail ,see tx and embedded tests for right way
     // TODO don't do this at home
     // TODO see AbstractTransactionalSpringContextTests for a better solution at reusable
 

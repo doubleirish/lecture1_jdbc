@@ -67,12 +67,13 @@ public class UserDao5OneToMany extends AbstractUserDao implements UserDao {
         // in either case the point is this is a lot of work for the developer.
 
         System.out.println(rs);
-        User user = new User();
-        user.setId(rs.getInt(1));
-        user.setUserName(rs.getString(2));
-        user.setFirstName(rs.getString(3));
-        user.setLastName(rs.getString(4));
-        user.setActiveSince(rs.getDate(5));
+        User user = new User.Builder()
+            .id(rs.getInt(1))
+            .userName(rs.getString(2))
+            .firstName(rs.getString(3))
+            .lastName(rs.getString(4))
+            .activeSince(rs.getDate(5))
+            .build();
 
         // build address
         String street = rs.getString(6);

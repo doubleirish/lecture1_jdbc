@@ -1,6 +1,7 @@
 package edu.uw.data.dao;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import edu.uw.data.model.Address;
 import edu.uw.data.model.User;
 import org.apache.commons.lang3.StringUtils;
@@ -34,13 +35,19 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
 
   private DataSource dataSource = null;
   private JdbcTemplate jdbcTemplate;
+  private NamedParameterJdbcTemplate namedParameterJdbcTemplate ;
+
 
   public UserDao6SpringJdbcTemplate() {
   }
 
+  // when we inject the datasource we can setup the jdbcTemplates.
+  // we would typically only need one template we're setting up both variants just for illustrative purposes.
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
     this.jdbcTemplate = new JdbcTemplate(dataSource);
+    this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+
   }
 
 
@@ -167,8 +174,11 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
     return user;
   }
 
+  // this is an example of supplying named parameters to a SQL statement.
+  // Using named Parameters is usually a good thing as you can reorder parameters
+  // and add new ones without breaking things
+  // the example below uses a static initializer to create an populate the map.
   public void updateUser_namedParameter(User user) {
-    NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 
     String sql = "UPDATE USERS set firstname = :first ,lastname = :last where id = :id";
 
@@ -178,18 +188,18 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
       put("id",user.getId());
     }};
 
-    jdbcTemplate.update(sql,map);
+    namedParameterJdbcTemplate.update(sql,map);
   }
 
+  // building a map of named parameters can be tedious.
+  // the following method shows how to use goolge guava ImmutableMap utility to simplify the map construction further,
   public void updateUser_namedParameterGuava(User user) {
-    NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-
     String sql = "UPDATE user set firstname = :first ,lastname = :last where id = :id";
     Map<String, Object> map = ImmutableMap.of("first", user.getFirstName(),
-        "last", user.getLastName(),
-        "id", user.getId());
+                                              "last", user.getLastName(),
+                                               "id", user.getId());
 
-    jdbcTemplate.update(sql,map);
+    namedParameterJdbcTemplate.update(sql,map);
   }
 
 
@@ -203,41 +213,56 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
 
   public List<User> findAll() {
     // remember our attempt to map one-to-many relationships using the UserDao5OneTomany class
-    List<User> users = new ArrayList<>();
+
+    Map<Integer, User> userMap= new TreeMap<>();
     String sql =
-        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since \n" +
-            "       , p.phone, p.label \n" +
-            "       , a.street, a.city , a.state , a.zip \n" +
-            "FROM Users u \n" +
-            "LEFT OUTER JOIN Address a on  a.id      = u.address_id \n" +
-            "LEFT OUTER JOIN phone   p on  p.user_Id = u.id \n" +
-            "ORDER BY u.id ";
+        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since " +
+            "       , p.phone, p.label " +
+            "       , a.street, a.city , a.state , a.zip " +
+            " FROM Users u \n" +
+            " LEFT OUTER JOIN Address a on  a.id      = u.address_id " +
+            " LEFT OUTER JOIN phone   p on  p.user_Id = u.id " +
+            " ORDER BY u.id ";
 
 
 
     List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql); //TODO replace with ResultSetExtractor
 
     for (Map row : rows) {
-      log.debug("ROW: "+row);
+      log.debug("ROW: " + row);
 
-      User user = new User();
-      user.setId(Integer.parseInt(String.valueOf(row.get("ID"))));
-      user.setLastName((String)  row.get("LASTNAME"));  //
-      user.setFirstName((String) row.get("FIRSTNAME"));
-      user.setUserName((String)  row.get("USERNAME"));
-      user.setActiveSince((Date) row.get("ACTIVE_SINCE"));
 
-      //build address
-      String street =(String) row.get("street");
-      if (StringUtils.isNotBlank(street)) {
-        Address address = new Address.Builder()
-            .street(street)
-            .city((String)  row.get("CITY"))
-            .state((String) row.get("STATE"))
-            .zip((String)   row.get("ZIP"))
-            .build();
-        user.setAddress(address);
+      int userId = Integer.parseInt(String.valueOf(row.get("ID")));
+
+      User user ;
+      if (!userMap.containsKey(userId)) {    // if user is new then create user
+        user = new User();
+        user.setId(userId);
+        user.setLastName((String) row.get("LASTNAME"));  //
+        user.setFirstName((String) row.get("FIRSTNAME"));
+        user.setUserName((String) row.get("USERNAME"));
+        user.setActiveSince((Date) row.get("ACTIVE_SINCE"));
+
+
+        //build address
+              String street =(String) row.get("street");
+              if (StringUtils.isNotBlank(street)) {
+                Address address = new Address.Builder()
+                    .street(street)
+                    .city((String)  row.get("CITY"))
+                    .state((String) row.get("STATE"))
+                    .zip((String)   row.get("ZIP"))
+                    .build();
+                user.setAddress(address);
+              }
+        userMap.put(user.getId(), user);  // add user to a hash map with ID index
+        log.debug("add user" + userId);
+
+      } else {    // if user already has been loaded the just lookup so we can add additional phone number
+        log.debug("lookup user"+userId);
+         user = userMap.get(userId);
       }
+
 
       // build phone
       String phoneStr = (String) row.get("PHONE");
@@ -250,10 +275,10 @@ public class UserDao6SpringJdbcTemplate  extends AbstractUserDao implements User
         user.addPhoneNumber(phone);
       }
 
-      users.add(user);
+
     }
 
-    return users;
+    return Lists.newArrayList(userMap.values());
   }
 
   // if we have lots of queries that all map user results in the same wasy

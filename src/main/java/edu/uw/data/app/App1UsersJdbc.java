@@ -7,12 +7,12 @@ import edu.uw.data.model.User;
 import java.util.List;
 
 /**
- * Hello prehistoric Jdbc!
- *
+ * An example of how a user of the DAO might use it.
+ * (see App7usersSpring for a
  */
-public class App1UsersOnly
+public class App1UsersJdbc
 {
-  public static void main(String[] args) {
+  public static void mainExample(String[] args) {
     UserDao dao = new UserDao1Orig();
     List<User> users = dao.findAll();
     for (User user : users) {
