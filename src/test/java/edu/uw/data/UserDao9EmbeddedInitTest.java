@@ -2,23 +2,24 @@ package edu.uw.data;
 
 
 import edu.uw.data.dao.UserDao;
+import edu.uw.data.dao.UserDao6SpringJdbcTemplate;
 import edu.uw.data.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Date;
 import java.util.List;
 
-import static com.google.common.base.CharMatcher.isNot;
-import static junit.framework.Assert.assertNull;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
@@ -29,8 +30,9 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
-        "classpath:/datasource-test.xml"})
-@TransactionConfiguration(transactionManager = "txManager", defaultRollback = false)
+    "classpath:/datasource-embedded-init.xml"})
+@Transactional(transactionManager = "txManager")
+@Rollback(false)   // don't really need to rollback as we reinitialize on test startup
 
 public class UserDao9EmbeddedInitTest extends AbstractTransactionalJUnit4SpringContextTests {
 
@@ -66,7 +68,7 @@ private UserDao userDao;
 
     userDao.createUser(user);
 
-    User foundUser =userDao.findUserByUsername(expectedUserName);  //TODO using an  mthod to test another method is a code smell
+    User foundUser =userDao.findUserByUsername(expectedUserName);  //TODO using an  method to test another method is a code smell
     log.info("foundUser "+foundUser);
     assertNotNull(foundUser);
     assertEquals(expectedUserName, foundUser.getUserName());
@@ -92,7 +94,7 @@ private UserDao userDao;
     int jsmithId = 2;
 
     String originalLastname = jdbcTemplate.queryForObject(
-        "select LASTNAME  from USERS  where ID = ?" ,String.class,jsmithId);
+        "select LAST_NAME  from USERS  where ID = ?" ,String.class,jsmithId);
 
     //
     // check initial state
@@ -107,7 +109,7 @@ private UserDao userDao;
      userDao.updateUser(user);
 
     String updatedUsername = jdbcTemplate.queryForObject( //TODO much less smelly
-        "select LASTNAME  from USERS  where ID = ?" ,String.class,jsmithId);
+        "select LAST_NAME  from USERS  where ID = ?" ,String.class,jsmithId);
 
     //
     // verify results
@@ -134,7 +136,7 @@ private UserDao userDao;
     //
 
     Integer tempUserId = jdbcTemplate.queryForObject(
-        "select ID  from USERS  where USERNAME = ?", Integer.class, tempUsername);
+        "select ID  from USERS  where USER_NAME = ?", Integer.class, tempUsername);
     assertThat(tempUserId, notNullValue());
 
 
@@ -154,12 +156,19 @@ private UserDao userDao;
 
   @Test
   public void findAll()    {
-    log.info("userDao "+userDao);
     List<User> users = userDao.findAll();
     assertNotNull(users);
     assertTrue(users.size() >0);
-    users.forEach(System.out::println);
+    users.forEach(System.out::println); //java 8 lamda
   }
+
+  @Test
+   public void findAll_using_ResultSetExtractor()    {
+     List<User> users = ((UserDao6SpringJdbcTemplate)userDao).findAll_using_ResultSetExtractor();
+     assertNotNull(users);
+     assertTrue(users.size() >0);
+     users.forEach(System.out::println); //java 8 lamda
+   }
 
 
 }

@@ -9,10 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -23,14 +24,14 @@ import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.*;
 
 /**
- * Unit test for simple App.
+ * this test cleans out and sets up test data in the database before calling each test method.
  *  TODO some of  tests will work once and then fail horribly. Why ?
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
-                                  "classpath:/datasource-embedded.xml"})
-@TransactionConfiguration(transactionManager = "txManager", defaultRollback = true)
-
+    "classpath:/datasource-embedded-test.xml"})
+@Transactional(transactionManager = "txManager")
+@Rollback
 public class UserDao8Embedded_SLOW_Test extends AbstractTransactionalJUnit4SpringContextTests {
 
   static final Logger log = LoggerFactory.getLogger(UserDao8Embedded_SLOW_Test.class);
@@ -48,15 +49,15 @@ private UserDao userDao;
   public void setup() throws Exception {
       boolean continueOnErrorTrue = true;
       boolean continueOnErrorFalse= false;
-      executeSqlScript("classpath:user_drop.sql", continueOnErrorTrue);
-    executeSqlScript("classpath:user_create.sql", continueOnErrorFalse);
-    executeSqlScript("classpath:user_insert.sql", continueOnErrorFalse);
+      executeSqlScript("classpath:user_1drop.sql", continueOnErrorTrue);
+    executeSqlScript("classpath:user_2create.sql", continueOnErrorFalse);
+    executeSqlScript("classpath:user_3insert.sql", continueOnErrorFalse);
   }
 
   @After
   public void tearDown() throws Exception {
 
-    //executeSqlScript("classpath:user_drop.sql", false);
+    //executeSqlScript("classpath:user_1drop.sql", false);
   }
 
 

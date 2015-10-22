@@ -23,29 +23,35 @@ public class UserDao1Orig extends AbstractUserDao implements UserDao {
       String databaseName = "lecture1";
       String dbUser = "app";
       String dbPassword = "app";
-      String url = "jdbc:derby://localhost:1527/"
-              + dbDir + "/" + databaseName + ";create=true;user="
-              +dbUser+";password="+dbPassword;
+
+      //hand build the database connection url
+      String url = "jdbc:derby://localhost:1527/"  // derby database service running on host and port
+          + dbDir + "/" + databaseName // location of database file
+          + ";create=true"             // create the database file if it doesn't exist.
+          +";user="   +dbUser          // database username
+          +";password="+dbPassword;    // database password
+
       log.info("dburl="+url);
+
       Connection connection = null;
       PreparedStatement ps = null;
       ResultSet rs = null;
       List<User> users = new ArrayList<>();
       try {
-        connection = DriverManager.getConnection(url);
+        connection = DriverManager.getConnection(url); // open a connection to the database
 
-        ps = connection.prepareStatement("SELECT id, username,firstname" +
-                " ,lastname, active_since FROM users");
+        ps = connection.prepareStatement("SELECT id, user_name,first_name" +
+                " ,last_name, active_since FROM users");
 
-        rs = ps.executeQuery();
-        while (rs.next()) {
+        rs = ps.executeQuery();   // calling the database
+        while (rs.next()) {        //retrieve a result row
           User user = new User();
-          user.setId(rs.getInt(1));
+          user.setId(rs.getInt(1));          // the result row's columns use one-based-index i.e first column in the result row,
           user.setUserName(rs.getString(2));
           user.setFirstName(rs.getString(3));
           user.setLastName(rs.getString(4));
           user.setActiveSince(rs.getDate(5));
-          users.add(user);
+          users.add(user);       // add user object to list
         }
         // eagerly free resources
         rs.close();
@@ -53,13 +59,13 @@ public class UserDao1Orig extends AbstractUserDao implements UserDao {
         connection.close();
       } catch (SQLException e) {
         e.printStackTrace();
-        throw new RuntimeException(e); //convert checked exception into unchecked
+        throw new RuntimeException(e);   //convert checked exception into unchecked
       } finally {
         try {
           if (rs != null && !rs.isClosed()) {
             rs.close();
           }
-        } catch (SQLException ignored) {
+        } catch (SQLException ignored) {   // there's usually no recovery from sql exceptions, so they are ignored
         }
         try {
           if (ps != null && !ps.isClosed()) {

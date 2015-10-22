@@ -24,11 +24,12 @@ public class UserDao2Try extends AbstractUserDao  implements UserDao
       List<User> users = new ArrayList<>();
       String url = "jdbc:derby://localhost:1527/c:/derbydata/lecture1;create=true;user=app;password=app";
 
-
+      // Java 7 introduced try-with-resources which auto-closes classes implementing the AutoCloseable interface
+      // such as  Connection, PreparedStatement and ResultSet
       try(
           Connection connection = DriverManager.getConnection(url);
           PreparedStatement  ps = connection.prepareStatement
-                  ("SELECT id, username,firstname ,lastname, active_since FROM Users");
+                  ("SELECT id, user_name,first_name ,last_name, active_since FROM Users");
 
           ResultSet rs=ps.executeQuery()
       ) {

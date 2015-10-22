@@ -15,10 +15,10 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-  <logger name="edu.uw" level="DEBUG"/>
+  <logger name="edu.uw" level="INFO"/>
   <logger name="ch.qos.logback" level="INFO"/>
-  <logger name="java.sql" level="DEBUG"/>
-  <logger name="javax.sql" level="DEBUG"/>
+  <logger name="java.sql" level="WARN"/>
+  <logger name="javax.sql" level="WARN"/>
 
 
 </configuration>

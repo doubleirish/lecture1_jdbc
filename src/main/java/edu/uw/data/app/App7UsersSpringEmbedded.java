@@ -1,7 +1,7 @@
 package edu.uw.data.app;
+
 import edu.uw.data.dao.UserDao;
 import edu.uw.data.model.User;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -16,13 +16,13 @@ import java.util.List;
  *   2)
  *   3) java -jar target/lecture1_jdbc-1.0-SNAPSHOT.jar
  */
-public class App7UsersSpring
+public class App7UsersSpringEmbedded
 {
 
-  static final Logger log = LoggerFactory.getLogger(App7UsersSpring.class);
+  static final Logger log = LoggerFactory.getLogger(App7UsersSpringEmbedded.class);
 
-  public static void mainExample(String[] args) {
-    log.info("Initializing Spring context.");
+  public static void main(String[] args) {
+    log.info("Initializing Spring context, starting embedded Derby server.");
 
     ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/applicationContext.xml");
 
@@ -32,6 +32,6 @@ public class App7UsersSpring
     log.info("userDao."+userDao);
 
     List<User> users = userDao.findAll();
-    users.forEach(System.out::println);  //java 8 lamda
+    users.forEach(System.out::println);
   }
 }

@@ -27,10 +27,10 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
 
 
 
-
+   /* A user has one address and many phones , save this to a database*/
   public void createUser (User user) {
     String sqlAddr  = "INSERT INTO ADDRESS(STREET, CITY, STATE, ZIP) VALUES (?,?,?,?)";
-    String sqlUsers = "INSERT INTO USERS(USERNAME, FIRSTNAME, LASTNAME, ACTIVE_SINCE,ADDRESS_ID) VALUES (?,?,?,?,?)";
+    String sqlUsers = "INSERT INTO USERS(USER_NAME, FIRST_NAME, LAST_NAME, ACTIVE_SINCE,ADDRESS_ID) VALUES (?,?,?,?,?)";
     String sqlPhone = "INSERT INTO PHONE(USER_ID, LABEL, PHONE) VALUES (?,?,?)";
 
     try (
@@ -40,12 +40,11 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
         PreparedStatement psPhone = connection.prepareStatement(sqlPhone)
     ) {
 
-//
       try {
 
 
         //
-        //create address if needed
+        //address is optional so create an address object if needed
         //
         Address address = user.getAddress();
         if (address != null && address.getStreet() != null) {
@@ -95,13 +94,10 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
           }
         }
 
-        // find id of new user using search
+        // find the id of the newly created user in the database via a query
         if (user.getId() == null) {
           user.setId(findUserIdByUsername(user.getUserName()));
         }
-
-
-
 
 
         //
@@ -109,7 +105,6 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
         //
         Set<Phone> phones = user.getPhoneNumbers();
         for (Phone phone : phones) {
-
           psPhone.setInt(1, user.getId());
           psPhone.setString(2, phone.getLabel());
           psPhone.setString(3, phone.getNumber());
@@ -130,7 +125,7 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
   public User readUser(Integer userId) {
     User user =null;
     String sqlUserAddress =
-        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since \n" +
+        "SELECT u.id, u.user_name, u.first_name ,u.last_name, u.active_since \n" +
             "       , a.street, a.city , a.state , a.zip \n" +
             "FROM Users u \n" +
             "LEFT OUTER JOIN Address a on  u.address_Id = a.id \n" +
@@ -200,7 +195,7 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
   }
 
   public void updateUser(User user) {
-    String sql = "UPDATE USERS SET FIRSTNAME = ? , LASTNAME=? where ID=?";
+    String sql = "UPDATE USERS SET FIRST_NAME = ? , LAST_NAME=? where ID=?";
     try (
         Connection connection = dataSource.getConnection();
         PreparedStatement ps = connection.prepareStatement(sql)
@@ -243,7 +238,7 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
 
   public User findUserByUsername(String username) {
     User user=null;
-    String sql = "select id,username,firstname,lastname,active_since from USERS where username= ?"  ;
+    String sql = "select id,user_name,first_name,last_name,active_since from USERS where user_name= ?"  ;
 
     try ( Connection connection = dataSource.getConnection();
           PreparedStatement ps = connection.prepareStatement(sql)
@@ -257,9 +252,9 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
       while (rs.next()) {
           user = new User();
         user.setId(rs.getInt("ID"));
-        user.setUserName(rs.getString("username"));
-        user.setFirstName(rs.getString("firstname"));
-        user.setLastName(rs.getString("lastname"));
+        user.setUserName(rs.getString("user_name"));
+        user.setFirstName(rs.getString("first_name"));
+        user.setLastName(rs.getString("last_name"));
         user.setActiveSince(rs.getDate("active_since"));
       }
 
@@ -285,7 +280,7 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
 
     List<User> users = new ArrayList<>();
     String sql =
-        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since \n" +
+        "SELECT u.id, u.user_name, u.first_name ,u.last_name, u.active_since \n" +
             "       , a.street, a.city , a.state , a.zip \n" +
             "       , p.phone, p.label \n" +
             "FROM Users u \n" +
@@ -357,7 +352,7 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
 
 
   public void createUserNoTxWithDefaultAutoCommit(User user) {
-    String sqlUsers = "INSERT INTO USERS(USERNAME, FIRSTNAME, LASTNAME, ACTIVE_SINCE) VALUES (?,?,?,?)";
+    String sqlUsers = "INSERT INTO USERS(USER_NAME, FIRST_NAME, LAST_NAME, ACTIVE_SINCE) VALUES (?,?,?,?)";
     String sqlAddr  = "INSERT INTO ADDRESS(USER_ID, STREET, CITY, STATE, ZIP) VALUES (?,?,?,?,?)";
     String sqlPhone = "INSERT INTO PHONE(USER_ID, LABEL, PHONE) VALUES (?,?,?)";
 

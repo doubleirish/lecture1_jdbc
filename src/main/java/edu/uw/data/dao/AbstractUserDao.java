@@ -5,7 +5,7 @@ import edu.uw.data.model.User;
 import java.util.List;
 
 /**
- * Created by credmond on 17/03/15.
+ * convenience abstract implementation so I don't have to implement every interface method in the concrete sublclasses.
  */
 public class AbstractUserDao implements UserDao {
 

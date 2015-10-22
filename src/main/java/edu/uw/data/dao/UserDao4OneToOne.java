@@ -22,12 +22,16 @@ public class UserDao4OneToOne extends AbstractUserDao  implements UserDao {
     this.dataSource = dataSource;
   }
 
+
+  /*
+     Use a Sql Join query to load info from the USER and ADDRESS tables into  User Objects with an embedded  Address
+   */
   public List<User> findAll() {
 
     List<User> users = new ArrayList<>();
     String sql =
-        "SELECT u.id,    u.username, u.firstname ,u.lastname, u.active_since " +
-        "     , a.street, a.city ,   a.state ,    a.zip " +
+        "SELECT u.id,    u.user_name, u.first_name ,u.last_name, u.active_since " +     // user columns
+        "     , a.street, a.city ,   a.state ,    a.zip " +                    // address columns
         "FROM Users u " +
         "LEFT OUTER JOIN Address a on  u.address_Id = a.id " +
         "ORDER BY u.id ";
@@ -36,19 +40,20 @@ public class UserDao4OneToOne extends AbstractUserDao  implements UserDao {
         PreparedStatement ps = connection.prepareStatement(sql);
         ResultSet rs = ps.executeQuery()
     ) {
-      while (rs.next()) {
+      while (rs.next()) {    // load next result row from database
         User user = new User();
-        user.setId(rs.getInt(1));
+        user.setId(rs.getInt(1));     // is a one-based-index i.e first column in the result row,
         user.setUserName(rs.getString(2));
         user.setFirstName(rs.getString(3));
         user.setLastName(rs.getString(4));
         user.setActiveSince(rs.getDate(5));
-        // user-address is a 1-to-1 relationship so easy to build.
+        // user-address is a 1-to-1 relationship and is easy to build.
         Address address = new Address.Builder()
             .street(rs.getString(6))
             .city(rs.getString(7))
             .state(rs.getString(8))
-            .zip(rs.getString(9)).build();
+            .zip(rs.getString(9))
+            .build();
         user.setAddress(address);
         users.add(user);
       }

@@ -97,7 +97,13 @@ public class User {
         '}';
   }
 
-
+  // An example of the Builder pattern as described in the book "Effective Java"  by Joshua Bloch
+  // builders are a less error prone alternative to constructors and more readable than setters
+  // example usage is below.
+  //   User user = new User.Builder()
+  //              .firstName("Ted")
+  //              .lastName("Crilly")
+  //              .build();
   public static class Builder {
     private User user;
 

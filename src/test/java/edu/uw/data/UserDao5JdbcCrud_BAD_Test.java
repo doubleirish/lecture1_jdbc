@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit test for simple App.
+ * This Test illustrates the problems you may experience testing with a stateful resource.
  */
 public class UserDao5JdbcCrud_BAD_Test {
 
@@ -36,7 +36,7 @@ public class UserDao5JdbcCrud_BAD_Test {
 
 
   @Test
-  public void createUser()    { //TODO
+  public void createUser()    { //TODO  This works the first time I run it, but ...
     UserDao dao = new UserDao5JdbcCrud(remoteDerbyDataSource);
     //TODO don't use this , use transactional or embedded db, coming soon
 
