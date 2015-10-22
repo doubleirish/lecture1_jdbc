@@ -26,7 +26,7 @@ public class UserDao3DS extends AbstractUserDao implements UserDao {
         //  TODO look ma, no passwords.
         Connection connection = dataSource.getConnection();
 
-        PreparedStatement ps = connection.prepareStatement("SELECT id, username,firstname ,lastname, active_since FROM Users");
+        PreparedStatement ps = connection.prepareStatement("SELECT id, user_name,first_name ,last_name, active_since FROM Users");
         ResultSet rs = ps.executeQuery()
     ) {
       while (rs.next()) {

@@ -30,7 +30,7 @@ public class UserDao4OneToOne extends AbstractUserDao  implements UserDao {
 
     List<User> users = new ArrayList<>();
     String sql =
-        "SELECT u.id,    u.username, u.firstname ,u.lastname, u.active_since " +     // user columns
+        "SELECT u.id,    u.user_name, u.first_name ,u.last_name, u.active_since " +     // user columns
         "     , a.street, a.city ,   a.state ,    a.zip " +                    // address columns
         "FROM Users u " +
         "LEFT OUTER JOIN Address a on  u.address_Id = a.id " +

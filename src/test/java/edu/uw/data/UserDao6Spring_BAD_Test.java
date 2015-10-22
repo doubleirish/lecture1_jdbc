@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.assertNull;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -54,7 +54,7 @@ private UserDao userDao;
 
     User foundUser =userDao.findUserByUsername(expectedUserName);
     log.info("foundUser "+foundUser);
-    assertNotNull(foundUser);
+    assert foundUser !=null ;
     assertEquals(expectedUserName, foundUser.getUserName());
 
 
@@ -124,7 +124,7 @@ private UserDao userDao;
     // 4 verify it's gone
     User tempAfter = userDao.findUserByUsername("temp");
 
-    assertNull(tempAfter);
+    assert tempAfter!=null;
 
 
 

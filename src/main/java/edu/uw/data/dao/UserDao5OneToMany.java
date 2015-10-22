@@ -29,7 +29,7 @@ public class UserDao5OneToMany extends AbstractUserDao implements UserDao {
 
     List<User> users = new ArrayList<>();
     String sql =
-        "SELECT u.id, u.username, u.firstname ,u.lastname, u.active_since \n" +
+        "SELECT u.id, u.user_name, u.first_name ,u.last_name, u.active_since \n" +
             "       , a.street, a.city , a.state , a.zip \n" +
             "       , p.phone, p.label \n" +
             "FROM Users u \n" +

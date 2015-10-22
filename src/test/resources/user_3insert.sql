@@ -5,14 +5,14 @@ INSERT INTO ADDRESS (ID,   ZIP,      STATE,  CITY,        STREET )
              values (2,    '98034',  'WA',   'Kirkland',    '123 Main St');
 
 
-INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE, ADDRESS_ID)
+INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE, ADDRESS_ID)
             values('credmond', 'Conor'  , 'Redmond', '2014-12-31',  1);
 
-INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE, ADDRESS_ID)
+INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE, ADDRESS_ID)
             values('jsmith', 'John'  ,    'Smith',   '2014-02-28',  2 );
 
 
-INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE)
+INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE)
             values('pdiddy', 'Puffy'  ,    'Combs',   '2014-07-04');                  
 
 

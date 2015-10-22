@@ -2,6 +2,7 @@ package edu.uw.data;
 
 
 import edu.uw.data.dao.UserDao;
+import edu.uw.data.dao.UserDao6SpringJdbcTemplate;
 import edu.uw.data.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,7 @@ import javax.sql.DataSource;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.assertNull;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
@@ -93,7 +94,7 @@ private UserDao userDao;
     int jsmithId = 2;
 
     String originalLastname = jdbcTemplate.queryForObject(
-        "select LASTNAME  from USERS  where ID = ?" ,String.class,jsmithId);
+        "select LAST_NAME  from USERS  where ID = ?" ,String.class,jsmithId);
 
     //
     // check initial state
@@ -108,7 +109,7 @@ private UserDao userDao;
      userDao.updateUser(user);
 
     String updatedUsername = jdbcTemplate.queryForObject( //TODO much less smelly
-        "select LASTNAME  from USERS  where ID = ?" ,String.class,jsmithId);
+        "select LAST_NAME  from USERS  where ID = ?" ,String.class,jsmithId);
 
     //
     // verify results
@@ -135,7 +136,7 @@ private UserDao userDao;
     //
 
     Integer tempUserId = jdbcTemplate.queryForObject(
-        "select ID  from USERS  where USERNAME = ?", Integer.class, tempUsername);
+        "select ID  from USERS  where USER_NAME = ?", Integer.class, tempUsername);
     assertThat(tempUserId, notNullValue());
 
 
@@ -160,6 +161,14 @@ private UserDao userDao;
     assertTrue(users.size() >0);
     users.forEach(System.out::println); //java 8 lamda
   }
+
+  @Test
+   public void findAll_using_ResultSetExtractor()    {
+     List<User> users = ((UserDao6SpringJdbcTemplate)userDao).findAll_using_ResultSetExtractor();
+     assertNotNull(users);
+     assertTrue(users.size() >0);
+     users.forEach(System.out::println); //java 8 lamda
+   }
 
 
 }

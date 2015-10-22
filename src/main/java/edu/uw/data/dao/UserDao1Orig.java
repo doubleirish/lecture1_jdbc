@@ -40,8 +40,8 @@ public class UserDao1Orig extends AbstractUserDao implements UserDao {
       try {
         connection = DriverManager.getConnection(url); // open a connection to the database
 
-        ps = connection.prepareStatement("SELECT id, username,firstname" +
-                " ,lastname, active_since FROM users");
+        ps = connection.prepareStatement("SELECT id, user_name,first_name" +
+                " ,last_name, active_since FROM users");
 
         rs = ps.executeQuery();   // calling the database
         while (rs.next()) {        //retrieve a result row

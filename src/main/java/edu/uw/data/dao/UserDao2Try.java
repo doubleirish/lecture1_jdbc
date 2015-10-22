@@ -29,7 +29,7 @@ public class UserDao2Try extends AbstractUserDao  implements UserDao
       try(
           Connection connection = DriverManager.getConnection(url);
           PreparedStatement  ps = connection.prepareStatement
-                  ("SELECT id, username,firstname ,lastname, active_since FROM Users");
+                  ("SELECT id, user_name,first_name ,last_name, active_since FROM Users");
 
           ResultSet rs=ps.executeQuery()
       ) {
