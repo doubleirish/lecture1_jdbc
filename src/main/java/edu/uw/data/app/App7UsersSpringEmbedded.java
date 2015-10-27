@@ -32,6 +32,8 @@ public class App7UsersSpringEmbedded
     log.info("userDao."+userDao);
 
     List<User> users = userDao.findAll();
-    users.forEach(System.out::println);
+    for (User user : users) {
+         System.out.println("User "+user);
+      }
   }
 }

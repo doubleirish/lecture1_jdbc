@@ -42,6 +42,8 @@ public class App7UsersSpring
     log.info("userDao."+userDao);
 
     List<User> users = userDao.findAll();
-    users.forEach(System.out::println);  //java 8 lamda
+    for (User user : users) {
+         System.out.println("User "+user);
+      }
   }
 }

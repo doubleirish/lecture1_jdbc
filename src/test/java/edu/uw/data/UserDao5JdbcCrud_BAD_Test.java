@@ -94,8 +94,10 @@ public class UserDao5JdbcCrud_BAD_Test {
     UserDao dao = new UserDao5JdbcCrud(remoteDerbyDataSource);
     List<User> users = dao.findAll();
     assertNotNull(users);
-    assertTrue(users.size() >0);
-    users.forEach(System.out::println);
+    assertTrue(users.size() > 0);
+    for (User user : users) {
+         System.out.println("User "+user);
+      }
 
   }
 

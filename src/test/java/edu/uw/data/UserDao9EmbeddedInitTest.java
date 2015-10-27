@@ -158,16 +158,21 @@ private UserDao userDao;
   public void findAll()    {
     List<User> users = userDao.findAll();
     assertNotNull(users);
-    assertTrue(users.size() >0);
-    users.forEach(System.out::println); //java 8 lamda
+    assertTrue(users.size() > 0);
+    for (User user : users) {
+         System.out.println("User "+user);
+      }
   }
 
   @Test
    public void findAll_using_ResultSetExtractor()    {
      List<User> users = ((UserDao6SpringJdbcTemplate)userDao).findAll_using_ResultSetExtractor();
      assertNotNull(users);
-     assertTrue(users.size() >0);
-     users.forEach(System.out::println); //java 8 lamda
+     assertTrue(users.size() > 0);
+    for (User user : users) {
+         System.out.println("User "+user);
+      }
+      // users.forEach(System.out::println); //java 8 lamda
    }
 
 

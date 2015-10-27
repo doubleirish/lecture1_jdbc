@@ -70,7 +70,9 @@ public class UserDao1_4Test {
     List<User> users = dao.findAll();
     assertNotNull(users);
     assertTrue(users.size() > 0);
-    users.forEach(System.out::println);
+    for (User user : users) {
+       System.out.println("User "+user);
+    }
   }
 
 

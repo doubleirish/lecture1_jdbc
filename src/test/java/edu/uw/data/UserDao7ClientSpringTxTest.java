@@ -120,11 +120,14 @@ private UserDao userDao;
 
   @Test
   public void findAll()    {
-    log.info("userDao "+userDao);
+    log.info("userDao " + userDao);
     List<User> users = userDao.findAll();
     assertNotNull(users);
-    assertTrue(users.size() >0);
-    users.forEach(System.out::println);
+    assertTrue(users.size() > 0);
+   // users.forEach(System.out::println);
+    for (User user : users) {
+         System.out.println("User "+user);
+      }
   }
 
 

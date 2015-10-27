@@ -182,7 +182,7 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
   // Using named Parameters is usually a good thing as you can reorder parameters
   // and add new ones without breaking things
   // the example below uses a static initializer to create an populate the map.
-  public void updateUser_namedParameter(User user) {
+  public void updateUser_namedParameter(final User user) {
 
     String sql = "UPDATE USERS set first_name = :first ,last_name = :last where id = :id";
 
@@ -197,14 +197,14 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
 
   // building a map of named parameters can be tedious.
   // the following method shows how to use goolge guava ImmutableMap utility to simplify the map construction further,
-  public void updateUser_namedParameterGuava(User user) {
-    String sql = "UPDATE user set first_name = :first ,last_name = :last where id = :id";
-    Map<String, Object> map = ImmutableMap.of("first", user.getFirstName(),
-        "last", user.getLastName(),
-        "id", user.getId());
-
-    namedParameterJdbcTemplate.update(sql, map);
-  }
+//  public void updateUser_namedParameterGuava(User user) {
+//    String sql = "UPDATE user set first_name = :first ,last_name = :last where id = :id";
+//    Map<String, Object> map = ImmutableMap.of("first", user.getFirstName(),
+//        "last", user.getLastName(),
+//        "id", user.getId());
+//
+//    namedParameterJdbcTemplate.update(sql, map);
+//  }
 
 
   public List<User> findAll() {
