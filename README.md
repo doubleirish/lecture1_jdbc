@@ -2,6 +2,8 @@
 A collection of various old JDBC based DAOs and a newer spring-jdbc-template based implementation
 The build file is Maven using Spring boot dependencies
 
+[![Build Status](https://jenkins-irishred.rhcloud.com/buildStatus/icon?job=jdbc)](https://jenkins-irishred.rhcloud.com/job/jdbc)
+
 *Class UserDao1Orig* - an old,old school JDBC implementation with embedded connection params and plaintext passwords . never use in production !!
                       * notice all the painful boiler plate to clean up resources.
 
