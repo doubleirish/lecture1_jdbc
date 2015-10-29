@@ -29,6 +29,8 @@ public class UserDao1_4Test {
   @Before
   public void setup() {
     remoteDerbyDataSource = new ClientDataSource();
+
+    // TODO load properties from a file
     remoteDerbyDataSource.setServerName("localhost");
     remoteDerbyDataSource.setDatabaseName("c:/derbydata/lecture1");   //location of derby database file.
     remoteDerbyDataSource.setUser("app");
