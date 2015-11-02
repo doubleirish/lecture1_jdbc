@@ -291,16 +291,115 @@ In your IDE open the lecture1_jdbc/src/test/resources/user_2create.sql file and 
       label VARCHAR(255) ,
       phone VARCHAR(255) NOT NULL
     );
-Click on the "Objects" tab.  Open the APP folder and the the TABLE subfolder.
+In Squirrel Click on the "Objects" tab.  Open the APP folder and then the TABLE subfolder.
 You should see three Tables created "ADDRESS", "PHONE" and "USERS"
 
-##Populate Dates
+Clicking on the "Columns" tab will show you the column definitions of that table
+Clicking on the "Content" tab shows there is no content setup yet.
+
+
+##Populate Data
+In your IDE open up the following file
+
+    lecture1_jdbc/src/test/resources/user_2create.sql
+
+Copy the contents into your Sql Client  SQL TAB      e.g
+
+    INSERT INTO ADDRESS (ID,   ZIP,      STATE,  CITY,        STREET )
+                 values (1,   '98052',  'WA',   'Seattle',    '9999 Belview Ave');
+
+    INSERT INTO ADDRESS (ID,   ZIP,      STATE,  CITY,        STREET )
+                 values (2,    '98034',  'WA',   'Kirkland',    '123 Main St');
+
+
+    INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE, ADDRESS_ID)
+                values('credmond', 'Conor'  , 'Redmond', '2014-12-31',  1);
+
+    INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE, ADDRESS_ID)
+                values('jsmith', 'John'  ,    'Smith',   '2014-02-28',  2 );
+
+
+    INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE)
+                values('pdiddy', 'Puffy'  ,    'Combs',   '2014-07-04');
+
+
+    INSERT INTO PHONE (USER_ID,   LABEL,      PHONE )
+               values (1,         'HOME',     '123-555-6789' );
+
+    INSERT INTO PHONE (USER_ID,   LABEL,      PHONE )
+               values (1,         'CELL',     '555-555-1212' );
+
+
+
+click on the Squirrel run-all icon
+In the Squirrel Objects tab , OPen up the APP/TABLE/ADDRESS folder, clicking on the "Contents" tab should show 2 rows populated
+
+    ID  STREET ...
+    1	   9999 Belview Ave	...
+    2	   123 Main St	...
+
+
+
 
 ##Query Data
+Run the following Sql To verify that everything is set up correctly
 
-#Client Application Setup
+    SELECT u.id, u.user_name, u.first_name ,u.last_name, u.active_since
+           , a.street, a.city , a.state , a.zip
+           , p.label , p.phone
+    FROM users u
+    LEFT OUTER JOIN address a on  a.id = u.id
+    LEFT OUTER JOIN phone p on  p.user_Id = u.id
+    ORDER BY u.id;
+
+
+You should see 4 rows returned (the credmond user is returned twice due to the PHONE join)
+
+# Java Client Application Setup
+Now that we have a running populated database active we can work on connecting a Java client to it
+You'll need to download or clone this git repository and then open it in your IDE.
+Use one of the
+
+## import this project in Spring Tool Suite or Eclipse
+- Click on the following Menu options : File -> Import
+- In the "Import" Dialog, expand the Maven folder and then select the contained "Existing Maven Projects" option and click Next.
+- In the "Import Maven Projects" Dialog, click on the Browse button next to the "Root folder"
+- Navigate to the project directory containing your pom.xml file and select that project directory folder.
+- In the "projects" box the  you’ll now see the pom.xml file included there.
+- Click on Finish
+
+
+## import this project in Intellij
+- If you are in the initial  "Welcome" dialog then Click "Open"
+          Otherwise
+  If you are in the Main Window select the  menu items : "File" -> "Open..."
+
+
+- Navigate to the directory containing your project.
+- click on the pom.xml file and Click OK
+- If given the options "open Existing Project"  and "Delete Existing Project and Import"    then choose the "Delete Existing.." option
+- ( this is usually a cleaner option that doesn't make assumptions on the location of Java SDK's etc.)
+
+## import this project in Netbeans
+- Click on the following Menu options : File -> "Open Project"
+- In the "Import Project" Dialog, Navigate to the project directory containing your pom.xml file and select that project directory folder.
+ (folders that have a pom.xml file will have a "Ma" icon to it's left indicating it's a maven project folder.)
+- Click on the "Open Project" button
+
 
 ## Configure client application connection
+Now that this app is in your IDE , you can start
+If you've built the derby database in a location other than c:\derbydata\lecture1 then you'll need to change
+the database location in following two files.
+
+ lecture1_jdbc/src/test/resources/jdbc.properties
+
+    jdbc.driverClassName=org.apache.derby.jdbc.ClientDriver
+    jdbc.url=jdbc:derby://localhost:1527/C:/derbydata/lecture1;create=true
+    jdbc.username=app
+    jdbc.password=app
+
+lecture1_jdbc/src/main/resources/datasource-production-client.xml
 
 ## Running Unit Tests
 
