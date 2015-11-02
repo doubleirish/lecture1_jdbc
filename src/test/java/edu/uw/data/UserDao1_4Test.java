@@ -38,11 +38,11 @@ public class UserDao1_4Test {
   }
 
   @Test
-  public void userDaoOrig_findAll() {
+  public void userDao1Orig_findAll() {
     UserDao dao = new UserDao1Orig();
     List<User> users = dao.findAll();
     assertNotNull(users);
-    assertThat("users", users.size(), is(greaterThan(0)));
+    assertThat("was expecting at least one user found", users.size(), is(greaterThan(0)));
 
   }
 
