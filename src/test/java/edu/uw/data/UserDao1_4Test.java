@@ -45,6 +45,9 @@ public class UserDao1_4Test {
     UserDao dao = new UserDao2Try();
     List<User> users = dao.findAll();
     assertNotNull(users);
+    for (User user : users) {
+      System.out.println("User "+user);
+    }
     assertTrue(users.size() > 0);
 
   }
@@ -74,6 +77,9 @@ public class UserDao1_4Test {
     UserDao dao = new UserDao3DS(remoteDerbyDataSource);
     List<User> users = dao.findAll();
     assertNotNull(users);
+    for (User user : users) {
+      System.out.println("User "+user);
+    }
     assertTrue(users.size() > 0);
   }
 

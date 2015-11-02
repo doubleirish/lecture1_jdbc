@@ -6,10 +6,12 @@ import edu.uw.data.model.Address;
 import edu.uw.data.model.Phone;
 import edu.uw.data.model.User;
 import org.apache.derby.jdbc.ClientDataSource;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -24,14 +26,24 @@ public class UserDao5JdbcCrud_BAD_Test {
 
   private static ClientDataSource remoteDerbyDataSource;
 
-  @BeforeClass
-  public static void setup () {
-    remoteDerbyDataSource = new ClientDataSource();
-    remoteDerbyDataSource.setServerName("localhost");
-    remoteDerbyDataSource.setDatabaseName("C:/derbydata/lecture1");
-    remoteDerbyDataSource.setUser("app");
-    remoteDerbyDataSource.setPassword("app");
-  }
+    @BeforeClass
+    public static void setup() {
+        remoteDerbyDataSource = new ClientDataSource();
+
+        // TODO load properties from a file
+
+        Properties props = AbstractUserDao.loadJdbcProperties("jdbc.properties");
+        String url = props.getProperty("jdbc.url");
+        String username = props.getProperty("jdbc.username");
+        String password = props.getProperty("jdbc.password");
+        String serverName = props.getProperty("server.name");
+        String databaseName = props.getProperty("database.name");
+
+        remoteDerbyDataSource.setServerName(serverName);
+        remoteDerbyDataSource.setDatabaseName(databaseName);   //location of derby database file.
+        remoteDerbyDataSource.setUser(username);
+        remoteDerbyDataSource.setPassword(password);
+    }
 
 
 
