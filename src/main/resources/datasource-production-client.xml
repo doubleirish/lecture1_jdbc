@@ -8,7 +8,7 @@
     <!--in real production world this would be a JNDI reference
      for a datasource defined in the container e.g tomcat's server.xml -->
 
-    <!-- client datasource for coneection to locally running standalone derby server -->
+    <!-- client datasource for connection to locally running standalone derby server -->
     <bean id="dataSourceX" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver"/>
         <property name="url" value="jdbc:derby://localhost:1527/C:\derbydata\lecture1;create=true"/>

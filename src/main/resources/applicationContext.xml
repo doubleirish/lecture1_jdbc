@@ -21,11 +21,8 @@
 
   <!-- service , dao beans-->
   <import resource="userapp-spring.xml"/>
-  <!-- datasource  related beans        -->
 
-  <!--
+  <!-- datasource  related beans        -->
   <import resource="datasource-production-client.xml"/>
-  -->
-  <import resource="datasource-production-embedded-init.xml"/>
 
 </beans>

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class App1UsersJdbc
 {
-  public static void mainExample(String[] args) {
+  public static void main(String[] args) {
     UserDao dao = new UserDao1Orig();
     List<User> users = dao.findAll();
     for (User user : users) {
