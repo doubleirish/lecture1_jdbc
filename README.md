@@ -258,7 +258,7 @@ secondly the  create=true parameter will create a set of database files at the D
 ## Connect To database from Sql Squirrel Client
 At this point we can make a connection to Derby using
 
-##Create Tables
+## Create Tables
 In Sql Squirrel open the "SQL" tab
 In your IDE open the lecture1_jdbc/src/test/resources/user_2create.sql file and paste the contents  e.g
 
@@ -297,6 +297,8 @@ You should see three Tables created "ADDRESS", "PHONE" and "USERS"
 Clicking on the "Columns" tab will show you the column definitions of that table
 Clicking on the "Content" tab shows there is no content setup yet.
 
+When creating and populate data , you should be aware that there are dependencies between the tables
+e.g USERS table depends on ADDRESS and PHONE table depends on USERS
 
 ##Populate Data
 In your IDE open up the following file
@@ -392,16 +394,74 @@ Now that this app is in your IDE , you can start
 If you've built the derby database in a location other than c:\derbydata\lecture1 then you'll need to change
 the database location in following two files.
 
- lecture1_jdbc/src/test/resources/jdbc.properties
+ lecture1_jdbc/src/main/resources/jdbc.properties
 
     jdbc.driverClassName=org.apache.derby.jdbc.ClientDriver
     jdbc.url=jdbc:derby://localhost:1527/C:/derbydata/lecture1;create=true
     jdbc.username=app
     jdbc.password=app
 
-lecture1_jdbc/src/main/resources/datasource-production-client.xml
+if you are using a Derby Database directory that is not "C:/derbydata/lecture1"
+then please change the jdbc.url entry in the file above to use your directory .
+
+If you are running on a UNIX OS,  the URL might looks something like the following
+
+    jdbc.url=jdbc:derby://localhost:1527//home/someuser/derbydata/lecture1;create=true
 
 ## Running Unit Tests
+
+After updating the jdbc.properties file to match the location of your database data directory
+you can now run some junit tests to make a connection from the Java client application to the database server
+
+Open the Junit File in your IDE and Execute the Test
+ lecture1_jdbc/src/test/java/edu/uw/data/UserDao1_4Test.java
+
+Execute Tests in Intellij
+Select the Test file and press CTRL-SHIFT-F10
+
+### Troubleshooting connections
+
+#### Database server not running ?
+The following error usually means the database server is not running.
+
+    java.sql.SQLNonTransientConnectionException: java.net.ConnectException : Error connecting to server localhost on port 1,527 with message Connection refused.
+
+you may want to open the console window and make sure it's still running.
+see the 'Run Derby Database' secion above for info on starting the server
+
+
+#### database was not found ?
+If you see the following error
+
+    java.sql.SQLNonTransientConnectionException: The connection was refused because the database C:/derbydata/lecture1 was not found.
+
+Then you may want to verify if a directory exists at that location and it contains derby subdirectories e.g "log", "Seg0", "tmp" etc
+If the directory does not exist you may want create one by ensuring the ";create=true" parameter is at the end of the database url
+you used in the jdbc.properties file
+
+
+#### Table USERS does not exist
+
+If you see an error similar to the following , it means that ther derby server is running,
+and that there is a datbase at the location defined in the url, but the TABLE you expected has not been created yet
+
+    java.sql.SQLSyntaxErrorException: Table/View 'USERS' does not exist.
+
+you can use the 'Create Tables' section above to create the ADDRESS,USERS, PHONE tables
+
+#### No Users Found
+
+If you have an assertion in your unit test that fails e.g the following assertion line
+
+    assertThat("was expecting at least one user found", users.size(), is(greaterThan(0)));
+
+result in an error below
+
+    java.lang.AssertionError: was expecting at least one user found
+    Expected: is a value greater than <0>
+
+This likely means that you have no populated
+You can use the 'Populate Data' section above to add in the missing users
 
 ## Building application
 

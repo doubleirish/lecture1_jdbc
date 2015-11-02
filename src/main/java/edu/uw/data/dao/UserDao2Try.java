@@ -5,6 +5,7 @@ import edu.uw.data.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * JDBC with improved try-with-resources (java 7), much less clean up this time .
@@ -22,7 +23,13 @@ public class UserDao2Try extends AbstractUserDao  implements UserDao
   public  List<User>  findAll()
     {
       List<User> users = new ArrayList<>();
-      String url = "jdbc:derby://localhost:1527/c:/derbydata/lecture1;create=true;user=app;password=app";
+      Properties prop = loadJdbcProperties("jdbc.properties");
+      String baseurl = prop.getProperty("jdbc.url");
+
+      //hand build the database connection url
+      String url = baseurl  +";user=app;password=app";
+
+      // e.g String url = "jdbc:derby://localhost:1527/c:/derbydata/lecture1;create=true;user=app;password=app";
 
       // Java 7 introduced try-with-resources which auto-closes classes implementing the AutoCloseable interface
       // such as  Connection, PreparedStatement and ResultSet

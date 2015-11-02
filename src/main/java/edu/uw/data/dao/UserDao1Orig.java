@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * JDBC old,old school with embedded connection params and plaintext passwords . never use in production !!
@@ -19,15 +20,16 @@ public class UserDao1Orig extends AbstractUserDao implements UserDao {
 
     public  List<User>  findAll()
     {
-      String dbDir = "c:/derbydata";
-      String databaseName = "lecture1";
+
+      Properties prop = loadJdbcProperties("jdbc.properties");
+
+
+      String baseurl = prop.getProperty("jdbc.url");
       String dbUser = "app";
       String dbPassword = "app";
 
       //hand build the database connection url
-      String url = "jdbc:derby://localhost:1527/"  // derby database service running on host and port
-          + dbDir + "/" + databaseName // location of database file
-          + ";create=true"             // create the database file if it doesn't exist.
+      String url = baseurl  // derby database service running on host and port
           +";user="   +dbUser          // database username
           +";password="+dbPassword;    // database password
 
