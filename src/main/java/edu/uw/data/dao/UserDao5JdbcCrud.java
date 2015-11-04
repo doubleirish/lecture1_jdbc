@@ -78,7 +78,11 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
         psUser.setString(3, user.getLastName());
         psUser.setTimestamp(4, new java.sql.Timestamp(new Date().getTime()));
 
-        psUser.setInt(5, (address!=null)?address.getId():null);
+        if (address!=null) {
+          psUser.setInt(5, address.getId());
+        }else {
+          psUser.setNull(5, Types.INTEGER);
+        }
 
         int rowsAffected = psUser.executeUpdate();
 
