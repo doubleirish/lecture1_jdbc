@@ -1,9 +1,12 @@
 package edu.uw.data.dao;
 
 import edu.uw.data.model.User;
+import org.apache.commons.configuration.ConfigurationConverter;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
-import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Properties;
 
@@ -47,25 +50,29 @@ public class AbstractUserDao implements UserDao {
   public static Properties loadJdbcProperties(String filename) {
     Properties properties = new Properties();
 
-    try (InputStream  input = AbstractUserDao.class.getClassLoader().getResourceAsStream(filename)){
 
+    try (InputStream  is = AbstractUserDao.class.getClassLoader().getResourceAsStream(filename);
+         BufferedReader in  = new BufferedReader(new InputStreamReader(is));
+    ){
 
+      //load the jdbc.properties reader
+      PropertiesConfiguration config = new PropertiesConfiguration();
+        config.load(in);
 
-      if (input == null) {
-        System.out.println("Sorry, unable to find " + filename);
-        return properties;
-      }
-
-      //load a properties file from class path, inside static method
-      properties.load(input);
+      // interpolate the variables
+      config = (PropertiesConfiguration )config.interpolatedConfiguration();
 
       //get the property value and print it out
 
-      System.out.println(properties.getProperty("jdbc.url"));
-      System.out.println(properties.getProperty("jdbc.username"));
-      System.out.println(properties.getProperty("jdbc.password"));
+      System.out.println(config.getProperty("server.name"));
+      System.out.println(config.getProperty("database.name"));
+      System.out.println(config.getProperty("jdbc.url"));
+      System.out.println(config.getProperty("jdbc.username"));
+      System.out.println(config.getProperty("jdbc.password"));
+      properties = ConfigurationConverter.getProperties(config);
 
-    } catch (IOException ex) {
+
+    } catch (Exception ex) {
       ex.printStackTrace();
       throw new RuntimeException(ex) ;
     }

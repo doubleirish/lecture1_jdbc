@@ -114,6 +114,19 @@
       <version>18.0</version>
     </dependency>
 
+ <!--
+ allows for interpolated property files e.g
+  server.name=localhost
+  database.name=C:/derbydata/lecture1
+   jdbc.url=jdbc:derby://${server.name}:1527/${database.name};create=true
+ -->
+  <dependency>
+  	<groupId>commons-configuration</groupId>
+  	<artifactId>commons-configuration</artifactId>
+  	<version>1.10</version>
+  </dependency>
+
+
 
     <!-- Support for common test dependencies, including JUnit, Hamcrest and Mockito along with the-->
     <dependency>
