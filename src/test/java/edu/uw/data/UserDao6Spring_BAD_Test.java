@@ -2,7 +2,7 @@ package edu.uw.data;
 
 
 import edu.uw.data.dao.UserDao;
-import edu.uw.data.model.Address;
+import edu.uw.data.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -10,19 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import edu.uw.data.model.User;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Unit test for simple App.
@@ -42,9 +37,9 @@ private UserDao userDao;
 
 
   @Test
-  public void createUser()    { // TODO This test will sometimes fail ,see tx and embedded tests for right way
+  public void createUser()    { // TODO Trying to create the same exact user twice would fail, hence the random username
     User user = new User();
-    String expectedUserName = "btest";
+    String expectedUserName = ("NEW" + System.currentTimeMillis()).substring(0,14);
     user.setUserName(expectedUserName);
     user.setFirstName("Bob");
     user.setLastName("Test");
@@ -103,28 +98,30 @@ private UserDao userDao;
 
     // 1 create a user
     //TODO FYI also usually not a good idea to test a method using another method for setup
+
+    String userName = ("TEMP" + System.currentTimeMillis()).substring(0,14);  //random user name
        userDao.createUser(new User.Builder()
-           .userName("temp")
+           .userName(userName)
            .firstName("tem")
            .lastName("porary")
-           .address(new Address.Builder().street("str").build())
+//           .address(new Address.Builder().street("str").build())
            .build());
 
     // 2.a verify user created
-    User tempUser = userDao.findUserByUsername("temp");
-    assertEquals("temp", tempUser.getUserName());
+    User tempUser = userDao.findUserByUsername(userName);
+    assertEquals(userName, tempUser.getUserName());
 
     //2.b verify address created
-    assertNotNull(tempUser.getAddress());
+//    assertNotNull(tempUser.getAddress());
    // assertThat(.getStreet(),is("str"));
 
     // 3 delete that user
     userDao.deleteUser(tempUser);
 
     // 4 verify it's gone
-    User tempAfter = userDao.findUserByUsername("temp");
+    User tempAfter = userDao.findUserByUsername(userName);
 
-    assert tempAfter!=null;
+    assert tempAfter==null;
 
 
 

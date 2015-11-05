@@ -1,9 +1,9 @@
 package edu.uw.data.dao;
 
 import edu.uw.data.model.Address;
+import edu.uw.data.model.Phone;
 import edu.uw.data.model.User;
 import org.apache.commons.lang3.StringUtils;
-import edu.uw.data.model.Phone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,22 +25,24 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
     this.dataSource = dataSource;
   }
 
+  // different variants of INSERT with defaults for primary key
+  private final String INSERT_ADDR =  "INSERT INTO ADDRESS(STREET, CITY, STATE, ZIP) VALUES (?,?,?,?)"; //implict PK gen defaulting
+  private final String INSERT_USERS = "INSERT INTO USERS(USER_NAME, FIRST_NAME, LAST_NAME, ACTIVE_SINCE, ADDRESS_ID) VALUES (?,?,?,?,?)";
+  private final String INSERT_PHONE = "INSERT INTO PHONE(ID, USER_ID, LABEL, PHONE) VALUES (DEFAULT, ?,?,?)"; //explict PK gen defaulting
 
 
-   /* A user has one address and many phones , save this to a database*/
+  /* A user has one address and many phones , save this to a database*/
   public void createUser (User user) {
-    String sqlAddr  = "INSERT INTO ADDRESS(STREET, CITY, STATE, ZIP) VALUES (?,?,?,?)";
-    String sqlUsers = "INSERT INTO USERS(USER_NAME, FIRST_NAME, LAST_NAME, ACTIVE_SINCE,ADDRESS_ID) VALUES (?,?,?,?,?)";
-    String sqlPhone = "INSERT INTO PHONE(USER_ID, LABEL, PHONE) VALUES (?,?,?)";
 
-    try (
-        Connection connection = dataSource.getConnection();
-        PreparedStatement psAddr = connection.prepareStatement(sqlAddr);
-        PreparedStatement psUser = connection.prepareStatement(sqlUsers);
-        PreparedStatement psPhone = connection.prepareStatement(sqlPhone)
+
+    try ( //with resources , used for auto closing
+          Connection connection = dataSource.getConnection();
+          PreparedStatement psAddr = connection.prepareStatement(INSERT_ADDR,Statement.RETURN_GENERATED_KEYS);
+          PreparedStatement psUser = connection.prepareStatement(INSERT_USERS,Statement.RETURN_GENERATED_KEYS);
+          PreparedStatement psPhone = connection.prepareStatement(INSERT_PHONE,Statement.RETURN_GENERATED_KEYS)
     ) {
 
-      try {
+      try { // used for rollback
 
 
         //
@@ -48,6 +50,8 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
         //
         Address address = user.getAddress();
         if (address != null && address.getStreet() != null) {
+
+          // get next sequence
 
 
           psAddr.setString(1, address.getStreet());
@@ -63,8 +67,9 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
           try (ResultSet generatedKeys = psAddr.getGeneratedKeys()) {
             if (generatedKeys != null && generatedKeys.next()) {
               address.setId(generatedKeys.getInt(1));
+              log.info("saved " + address );
             } else {
-              log.warn("Creating address failed, no ID obtained." + user);
+              log.warn("Creating address failed, no ID obtained for creating address row" + address +" genresult keys ="+generatedKeys);
             }
           }
 
@@ -356,15 +361,12 @@ public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
 
 
   public void createUserNoTxWithDefaultAutoCommit(User user) {
-    String sqlUsers = "INSERT INTO USERS(USER_NAME, FIRST_NAME, LAST_NAME, ACTIVE_SINCE) VALUES (?,?,?,?)";
-    String sqlAddr  = "INSERT INTO ADDRESS(USER_ID, STREET, CITY, STATE, ZIP) VALUES (?,?,?,?,?)";
-    String sqlPhone = "INSERT INTO PHONE(USER_ID, LABEL, PHONE) VALUES (?,?,?)";
 
     try (
         Connection connection = dataSource.getConnection();
-        PreparedStatement psUser = connection.prepareStatement(sqlUsers);
-        PreparedStatement psAddr = connection.prepareStatement(sqlAddr);
-        PreparedStatement psPhone = connection.prepareStatement(sqlPhone)
+        PreparedStatement psUser = connection.prepareStatement(INSERT_USERS);
+        PreparedStatement psAddr = connection.prepareStatement(INSERT_ADDR);
+        PreparedStatement psPhone = connection.prepareStatement(INSERT_PHONE)
     ) {
 
       connection.setAutoCommit(false); // TODO begin transaction

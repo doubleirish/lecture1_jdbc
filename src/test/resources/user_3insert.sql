@@ -1,8 +1,8 @@
-INSERT INTO ADDRESS (ID,   ZIP,      STATE,  CITY,        STREET )
-             values (1,   '98052',  'WA',   'Seattle',    '9999 Belview Ave');
+INSERT INTO ADDRESS (   ZIP,      STATE,  CITY,        STREET )
+             values (   '98052',  'WA',   'Seattle',    '9999 Belview Ave');
 
-INSERT INTO ADDRESS (ID,   ZIP,      STATE,  CITY,        STREET )
-             values (2,    '98034',  'WA',   'Kirkland',    '123 Main St');
+INSERT INTO ADDRESS (   ZIP,      STATE,  CITY,        STREET )
+             values (    '98034',  'WA',   'Kirkland',    '123 Main St');
 
 
 INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE, ADDRESS_ID)
@@ -13,11 +13,11 @@ INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE, ADDRESS_ID
 
 
 INSERT INTO USERS (USER_NAME,   FIRST_NAME, LAST_NAME,  ACTIVE_SINCE)
-            values('pdiddy', 'Puffy'  ,    'Combs',   '2014-07-04');                  
+            values('pdiddy', 'Puffy'  ,    'Combs',   '2014-07-04');
 
 
 INSERT INTO PHONE (USER_ID,   LABEL,      PHONE )
-           values (1,         'HOME',     '123-555-6789' );  
-              
+           values (1,         'HOME',     '123-555-6789' );
+
 INSERT INTO PHONE (USER_ID,   LABEL,      PHONE )
-           values (1,         'CELL',     '555-555-1212' );  
+           values (1,         'CELL',     '555-555-1212' );

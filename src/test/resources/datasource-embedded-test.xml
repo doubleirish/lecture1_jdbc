@@ -6,12 +6,27 @@
 
 
 
-    <!-- embedded datasource for connection to an embedded in-memory derby database  -->
+    <!-- embedded datasource for connection to an embedded derby database  service-->
+
+    <!--
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
         <property name="url" value="jdbc:derby:tempDb;create=true"/>
         <property name="username"  value="app"/>
         <property name="password" value="app"/>
+    </bean>
+    -->
+
+    <!-- wrap datasource with p6spy -->
+    <bean id="dataSource" class="com.p6spy.engine.spy.P6DataSource">
+        <constructor-arg>
+            <bean id="wrappedDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+                <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+                <property name="url" value="jdbc:derby:tempDb;create=true"/>
+                <property name="username"  value="app"/>
+                <property name="password" value="app"/>
+            </bean>
+        </constructor-arg>
     </bean>
 
 </beans>

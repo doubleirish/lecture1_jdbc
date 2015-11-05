@@ -1,17 +1,17 @@
 package edu.uw.data;
 
 
-import edu.uw.data.dao.*;
+import edu.uw.data.dao.DataSourceHelper;
+import edu.uw.data.dao.UserDao;
+import edu.uw.data.dao.UserDao5JdbcCrud;
 import edu.uw.data.model.Address;
 import edu.uw.data.model.Phone;
 import edu.uw.data.model.User;
-import org.apache.derby.jdbc.ClientDataSource;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -24,35 +24,22 @@ import static org.junit.Assert.assertTrue;
  */
 public class UserDao5JdbcCrud_BAD_Test {
 
-  private static ClientDataSource remoteDerbyDataSource;
+  private static DataSource remoteDerbyDataSource;
 
     @BeforeClass
     public static void setup() {
-        remoteDerbyDataSource = new ClientDataSource();
-
-        // TODO load properties from a file
-
-        Properties props = AbstractUserDao.loadJdbcProperties("jdbc.properties");
-        String url = props.getProperty("jdbc.url");
-        String username = props.getProperty("jdbc.username");
-        String password = props.getProperty("jdbc.password");
-        String serverName = props.getProperty("server.name");
-        String databaseName = props.getProperty("database.name");
-
-        remoteDerbyDataSource.setServerName(serverName);
-        remoteDerbyDataSource.setDatabaseName(databaseName);   //location of derby database file.
-        remoteDerbyDataSource.setUser(username);
-        remoteDerbyDataSource.setPassword(password);
+      remoteDerbyDataSource =DataSourceHelper.buildDebugClientDataSourceFromFile();
     }
 
 
 
-  @Test
-  public void createUser()    { //TODO  This works the first time I run it, but ...
+
+    @Test
+  public void testCreateUser()    { //TODO  what would happen if we had a fixed username ?
     UserDao dao = new UserDao5JdbcCrud(remoteDerbyDataSource);
     //TODO don't use this , use transactional or embedded db, coming soon
 
-    String userName = ("NEW" + System.currentTimeMillis()).substring(3);
+    String userName = ("NEW" + System.currentTimeMillis()).substring(0,14);
     User user = new User.Builder()
         .userName(userName)
         .firstName("new")

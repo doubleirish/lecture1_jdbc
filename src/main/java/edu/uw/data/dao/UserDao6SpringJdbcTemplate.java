@@ -1,6 +1,5 @@
 package edu.uw.data.dao;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import edu.uw.data.model.Address;
 import edu.uw.data.model.Phone;
@@ -16,12 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 
 /**
@@ -103,8 +97,8 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
   public void createUser(User user) {
     // TODO no boilerplate setup
     String sql = "INSERT INTO USERS  " +
-        "(USER_NAME, first_name, last_name, ACTIVE_SINCE) " +
-        "VALUES (?, ?, ?,?)";
+        "( USER_NAME, first_name, last_name, ACTIVE_SINCE) " +
+        "VALUES ( ?, ?, ?,?)";
     jdbcTemplate.update(sql, user.getUserName(),  // varargs method
         user.getFirstName(),
         user.getLastName(),

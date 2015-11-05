@@ -64,11 +64,7 @@ public class AbstractUserDao implements UserDao {
 
       //get the property value and print it out
 
-      System.out.println(config.getProperty("server.name"));
-      System.out.println(config.getProperty("database.name"));
-      System.out.println(config.getProperty("jdbc.url"));
-      System.out.println(config.getProperty("jdbc.username"));
-      System.out.println(config.getProperty("jdbc.password"));
+
       properties = ConfigurationConverter.getProperties(config);
 
 
