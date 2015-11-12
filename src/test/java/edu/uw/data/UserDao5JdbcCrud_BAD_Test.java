@@ -35,11 +35,9 @@ public class UserDao5JdbcCrud_BAD_Test {
 
 
     @Test
-  public void testCreateUser()    { //TODO  what would happen if we had a fixed username ?
+  public void testCreateUser()    { //TODO  question : what would happen if we had a fixed username ?
     UserDao dao = new UserDao5JdbcCrud(remoteDerbyDataSource);
-    //TODO don't use this , use transactional or embedded db, coming soon
-
-    String userName = ("NEW" + System.currentTimeMillis()).substring(0,14);
+    String userName = ("NEW" + System.currentTimeMillis()).substring(0,14);   // create new user every time
     User user = new User.Builder()
         .userName(userName)
         .firstName("new")
@@ -81,10 +79,7 @@ public class UserDao5JdbcCrud_BAD_Test {
 
   @Test
   public void deleteUser()    {
-    //UserDao dao = new UserDao5JdbcCrud(remoteDerbyDataSource);
-    // TODO dao.deletePhonesForUser(132);
-    // TODO dao.deleteAddressForUser(132);
-    // TODO dao.deleteUser(132);
+    // TODO question ? how could i repeatedly run this test successfully
   }
 
 

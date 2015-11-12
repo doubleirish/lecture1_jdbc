@@ -52,7 +52,9 @@ and so don't require a running database to be already setup.
 - we show how JDBC is not great at loading one-to-many relationships  e.g a User has many phones
 
 ### Class UserDao5OneToMany
-- Spring JdbcTemplates eliminate low level boilerplate like Connections and prepareStaments, they also assist with checked exceptions
+- Spring JdbcTemplates eliminate low level boilerplate like Connections and prepareStaments,
+    they also assist with checked exceptions. Classes like the ResultSetExtractor help us centralize
+    and reuse the mapping from Sql result sets into Java classes.
 
 
 # Client Server Setup.
@@ -79,7 +81,9 @@ see the following for instruction for JDK 8
 - On the Advanced tab, select Environment Variables,
 - Under the "System variables" section  click on the "New..." button
 - In the "Variable name" enter the value JAVA_HOME
-- In the "Variable value" field enter the location where you installed the JDK e.g.  C:\Program Files\Java\jdk1.8.0_65
+- In the "Variable value" field enter the location where you installed the JDK e.g.  
+    
+    C:\Program Files\Java\jdk1.8.0_65
 
 
 ### To update  PATH for Windows :
@@ -141,7 +145,7 @@ Derby comes with a command line client.  To make the client easier to use,  add 
 
 ## Run Derby Database
 You'll need to open a a new Console window on your syste,
-On windows  press WIN-R and type cmd
+On windows  press WIN-R and type "cmd"
 (in the windows console type "set" to see if your environmental variables you just added show up on linux type "env")
 Change Directory to your  <DERBY_HOME>\bin   directory
 
@@ -162,8 +166,10 @@ If all goes well you might see something like the following
 Leave the console window open and running, we'll return here later.
 
 ## Verify Derby installation
-cd %DERBY_HOME%\bin
-sysinfo.bat
+To verify your installation is correct.
+
+    cd %DERBY_HOME%\bin
+    sysinfo.bat
 
 you should logged output on your java, derby and locale settings.
 
@@ -213,6 +219,7 @@ or in a windows console :-
 click on the vertical "Drivers" tab .
 if you see a red (x) symbol next to the "Apache Derby Client" driver then it means that driver is not yet installed.
 to install the driver, otherwise you can skip to the "create Alias" step
+
 ## Install  Derby Client Driver
 
 - select the   "Apache Derby Client" entry and click the pencil icon to edit
@@ -220,10 +227,6 @@ to install the driver, otherwise you can skip to the "create Alias" step
 - Click on “Add” and select the <DERBY_HOME>\lib\derbyClient.jar
 - In the "Class Name"" dropdown select "org.apache.derby.jdbc.ClientDriver"" and then click the OK Button
 - There should now be a blue tick mark in front of the Apache Derby Client driver.
-
-
-
-
 
 ## Create Alias
 In Squirrel An "Alias" is simply a nickname to wrap up the connection properties used to connect to a database
@@ -238,12 +241,17 @@ In Squirrel An "Alias" is simply a nickname to wrap up the connection properties
 
 - The DB URL format for derby is as follows
 
-    jdbc:derby://localhost:1527/<DERBY_DATA_DIR>/<DATABASE_NAME>;create=true
+      jdbc:derby://localhost:1527/<DERBY_DATA_DIR>/<DATABASE_NAME>;create=true
 
 - You'll need to use a different value depending on whether you are unix or windows based.
 
-e.g URL on Linux :  jdbc:derby://localhost:1527//home/someuser/derbydata/lecture1;create=true
-e.g Url on Windows  :   jdbc:derby://localhost:1527/c:/derbydata/lecture1;create=true
+e.g URL on Linux
+
+    jdbc:derby://localhost:1527//home/someuser/derbydata/lecture1;create=true
+
+e.g Url on Windows
+
+    jdbc:derby://localhost:1527/c:/derbydata/lecture1;create=true
 
 - The DB URL has two qualities that you may not be familar with , if you've used other databases
 firstly the DERBY_DATA_DIR component needs to map to an accessible file location on the derby server.
@@ -251,7 +259,8 @@ secondly the  create=true parameter will create a set of database files at the D
 
 - Click on “Test”and then “Connect” to verify connection
 - Click on “OK” to save
-- Open up a console and change directories to your <DERBY_DATA_DIR>  eyou used .g c:\derbydata and you should see a bunch of files there.
+- Open up a console and change directories to your <DERBY_DATA_DIR>  you used e.g
+c:\derbydata and you should see a bunch of files there.
 
 
 
@@ -259,8 +268,15 @@ secondly the  create=true parameter will create a set of database files at the D
 At this point we can make a connection to Derby using
 
 ## Create Tables
-In Sql Squirrel open the "SQL" tab
-In your IDE open the lecture1_jdbc/src/test/resources/user_2create.sql file and paste the contents  e.g
+In Sql Squirrel open the "SQL" tab.
+In your IDE open up the file
+
+    lecture1_jdbc/src/test/resources/user_2create.sql file
+
+ and paste the contents into  the SQL tab body and then click on the run-all icon or press the following keys sequence in squirrel
+ ALT-SHIFT-ENTER.
+
+The  contents of the user_2create.sql file are shown below for easy reference e.g
 
     CREATE TABLE ADDRESS (
       ID      INT          NOT NULL
@@ -274,6 +290,8 @@ In your IDE open the lecture1_jdbc/src/test/resources/user_2create.sql file and 
       ZIP     VARCHAR(10)  NOT NULL
     );
 
+
+    /* build users table which  references address table */
     CREATE TABLE USERS (
       ID           INT          NOT NULL
                                 GENERATED ALWAYS  AS IDENTITY
@@ -296,6 +314,8 @@ In your IDE open the lecture1_jdbc/src/test/resources/user_2create.sql file and 
       phone   VARCHAR(255) NOT NULL
     );
 
+Note the "GENERATED ALWAYS AS IDENTITY" section makes derby solely responsible for generating primary key values.
+
 In Squirrel Click on the "Objects" tab.  Open the APP folder and then the TABLE subfolder.
 You should see three Tables created "ADDRESS", "PHONE" and "USERS"
 
@@ -305,7 +325,7 @@ Clicking on the "Content" tab shows there is no content setup yet.
 When creating and populate data , you should be aware that there are dependencies between the tables
 e.g USERS table depends on ADDRESS and PHONE table depends on USERS
 
-##Populate Data
+## Populate Data
 In your IDE open up the following file
 
     lecture1_jdbc/src/test/resources/user_2create.sql
@@ -349,7 +369,7 @@ In the Squirrel Objects tab , OPen up the APP/TABLE/ADDRESS folder, clicking on 
 
 
 
-##Query Data
+## Query Data
 Run the following Sql To verify that everything is set up correctly
 
     SELECT u.id, u.user_name, u.first_name ,u.last_name, u.active_since
@@ -364,11 +384,11 @@ Run the following Sql To verify that everything is set up correctly
 You should see 4 rows returned (the credmond user is returned twice due to the PHONE join)
 
 # Java Client Application Setup
-Now that we have a running populated database active we can work on connecting a Java client to it
+Now that we have a running populated database active, we can work on connecting a Java client to it
 You'll need to download or clone this git repository and then open it in your IDE.
-Use one of the
+Use one of the following guides depending on your IDE :-
 
-## import this project in Spring Tool Suite or Eclipse
+## importing this project in Spring Tool Suite or Eclipse
 - Click on the following Menu options : File -> Import
 - In the "Import" Dialog, expand the Maven folder and then select the contained "Existing Maven Projects" option and click Next.
 - In the "Import Maven Projects" Dialog, click on the Browse button next to the "Root folder"
@@ -377,7 +397,7 @@ Use one of the
 - Click on Finish
 
 
-## import this project in Intellij
+## importing this project in Intellij
 - If you are in the initial  "Welcome" dialog then Click "Open"
           Otherwise
   If you are in the Main Window select the  menu items : "File" -> "Open..."
@@ -388,7 +408,7 @@ Use one of the
 - If given the options "open Existing Project"  and "Delete Existing Project and Import"    then choose the "Delete Existing.." option
 - ( this is usually a cleaner option that doesn't make assumptions on the location of Java SDK's etc.)
 
-## import this project in Netbeans
+## importing  this project in Netbeans
 - Click on the following Menu options : File -> "Open Project"
 - In the "Import Project" Dialog, Navigate to the project directory containing your pom.xml file and select that project directory folder.
  (folders that have a pom.xml file will have a "Ma" icon to it's left indicating it's a maven project folder.)
@@ -425,7 +445,8 @@ Open the Junit File in your IDE and Execute the Test
 Execute Tests in Intellij
 Select the Test file and press CTRL-SHIFT-F10
 
-### Troubleshooting connections
+### Troubleshooting Issues
+The main types of errors you might see are covered below.
 
 #### Database server not running ?
 The following error usually means the database server is not running.
@@ -436,7 +457,7 @@ you may want to open the console window and make sure it's still running.
 see the 'Run Derby Database' secion above for info on starting the server
 
 
-#### database was not found ?
+#### Database was not found ?
 If you see the following error
 
     java.sql.SQLNonTransientConnectionException: The connection was refused because the database C:/derbydata/lecture1 was not found.
@@ -461,26 +482,35 @@ If you have an assertion in your unit test that fails e.g the following assertio
 
     assertThat("was expecting at least one user found", users.size(), is(greaterThan(0)));
 
-result in an error below
+results in the error below
 
     java.lang.AssertionError: was expecting at least one user found
     Expected: is a value greater than <0>
 
-This likely means that you have no populated
+This likely means that you have no populated data in your database.
 You can use the 'Populate Data' section above to add in the missing users
 
 #### Other Issues ?
 P6Spy is a library that can be used to wrap/proxy a datasource.
 It will log all SQL statements to a file called spy.log.
 
-This spy.log file is created in the working or toplevel  directory of the project.
-P6spy  is enabled on all of the junit test classes,
+This spy.log file is usually created in the working or toplevel  directory of the project.
+P6spy  is currently enabled by default in all of the junit test classes.
+
+Whats nice about p6Spy is that it shows the interpolated sql,
+ i.e the combination of the preparedStatement with the "?" placeholders with the actual values submiteed in those placholders.
+
+ The JDBC package debug logs don't show this combined information, so this is a real improvement.
+
+    1446766987015|1|statement|connection 3|INSERT INTO USERS  ( USER_NAME, first_name, last_name, ACTIVE_SINCE) VALUES ( ?, ?, ?,?)| ...
+      INSERT INTO USERS  ( USER_NAME, first_name, last_name, ACTIVE_SINCE) VALUES ( 'ksauce', 'Keyser', 'Soze','05-Nov-15')
+
 
 So if you have an issue not covered above,
 you may find it useful to examine the spy.log file
-to see what SQL statements are going over the wire.
+to see the  the raw  SQL statements going over the wire.
 
-## Building application
+## Building the Client application
 
 inside the maven build file we have includes a springboot plugin
 that can package the project as an executable jar.
@@ -495,7 +525,7 @@ After downloading a bunch of dependencies , It should eventually create a new "t
 
         lecture1_jdbc-1.0-SNAPSHOT.jar
 
-## Running  application
+## Running the Client  application
 To run the client application from the command line, change directory into the newly created target subdirectory and then run the following command
 
         java -jar  lecture1_jdbc-1.0-SNAPSHOT.jar

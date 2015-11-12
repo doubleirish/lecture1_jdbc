@@ -25,7 +25,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
 /**
- * repeatable
+ * this test implictly cleans out and sets up test data in the database using the <jdbc:embedded-database> datasource properties
+ * This happens once per test class , not once per test method , so it is quite a bit faster.
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -123,34 +124,26 @@ private UserDao userDao;
   public void deleteTempUser()    {
 
     //
-    // Create a user
+    // 1. Create a user
     //
     String tempUsername = "unittest";
     User user  = new User.Builder().userName(tempUsername).firstName("delete").lastName("me").build();
-
-
-
     userDao.createUser(user);
-    //
-    // verify it was persisted
-    //
 
+    //
+    // 2. verify it was persisted
+    //
     Integer tempUserId = jdbcTemplate.queryForObject(
         "select ID  from USERS  where USER_NAME = ?", Integer.class, tempUsername);
     assertThat(tempUserId, notNullValue());
 
 
-
-    // 3 delete that user
+    // 3. delete that user
     userDao.deleteUser(new User(tempUserId));
 
-    // 4 verify it's gone
+    // 4. verify it's gone
     User tempAfter = userDao.findUserByUsername("temp");
-
     assertNull(tempAfter);
-
-
-
   }
 
 
@@ -166,6 +159,7 @@ private UserDao userDao;
 
   @Test
    public void findAll_using_ResultSetExtractor()    {
+    // using a multi column join to build User object with populated Addess and Phone
      List<User> users = ((UserDao6SpringJdbcTemplate)userDao).findAll_using_ResultSetExtractor();
      assertNotNull(users);
      assertTrue(users.size() > 0);

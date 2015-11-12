@@ -29,7 +29,7 @@ public class UserDao1Orig extends AbstractUserDao implements UserDao {
       String dbPassword = "app";
 
       //hand build the database connection url
-      String url = baseurl  // derby database service running on host and port
+      String url = baseurl             // derby database service running on host and port
           +";user="   +dbUser          // database username
           +";password="+dbPassword;    // database password
 

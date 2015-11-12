@@ -37,6 +37,7 @@ public class AbstractUserDao implements UserDao {
 
   @Override
   public List<User> findAll() {
+
     throw new UnsupportedOperationException();
   }
 

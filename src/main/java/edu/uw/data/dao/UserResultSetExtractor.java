@@ -54,7 +54,7 @@ public class UserResultSetExtractor implements ResultSetExtractor {
         user.setAddress(address);
       }
 
-      //add optional phonenumbers
+      //add optional phone numbers
       String phoneNumber = rs.getString("PHONE");
       if (StringUtils.isNotBlank(phoneNumber)) {
         String phoneLabel = rs.getString("LABEL");

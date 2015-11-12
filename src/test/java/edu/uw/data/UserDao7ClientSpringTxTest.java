@@ -62,8 +62,6 @@ private UserDao userDao;
     log.info("foundUser "+foundUser);
     assertNotNull(foundUser);
     assertEquals(expectedUserName, foundUser.getUserName());
-
-
   }
 
   @Test

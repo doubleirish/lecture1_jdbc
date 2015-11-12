@@ -92,39 +92,27 @@ private UserDao userDao;
 
 
   @Test
-  public void deleteTempUser()    { // TODO This test will sometimes fail ,see tx and embedded tests for right way
-    // TODO don't do this at home
-    // TODO see AbstractTransactionalSpringContextTests for a better solution at reusable
+  public void deleteTempUser()    { //one implementation of repeatable mutable tests
 
     // 1 create a user
     //TODO FYI also usually not a good idea to test a method using another method for setup
-
-    String userName = ("TEMP" + System.currentTimeMillis()).substring(0,14);  //random user name
+    String userName = ("TEMP" + System.currentTimeMillis()).substring(0,14);  // random user name
        userDao.createUser(new User.Builder()
            .userName(userName)
            .firstName("tem")
            .lastName("porary")
-//           .address(new Address.Builder().street("str").build())
            .build());
 
     // 2.a verify user created
     User tempUser = userDao.findUserByUsername(userName);
     assertEquals(userName, tempUser.getUserName());
 
-    //2.b verify address created
-//    assertNotNull(tempUser.getAddress());
-   // assertThat(.getStreet(),is("str"));
-
     // 3 delete that user
     userDao.deleteUser(tempUser);
 
     // 4 verify it's gone
     User tempAfter = userDao.findUserByUsername(userName);
-
     assert tempAfter==null;
-
-
-
   }
 
 

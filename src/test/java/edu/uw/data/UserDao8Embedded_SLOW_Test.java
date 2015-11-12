@@ -21,11 +21,13 @@ import java.util.Date;
 import java.util.List;
 
 import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * this test cleans out and sets up test data in the database before calling each test method.
- *  TODO some of  tests will work once and then fail horribly. Why ?
+ * this test explictly cleans out and sets up test data in the database using the setup() call before calling each test method.
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
@@ -37,7 +39,7 @@ public class UserDao8Embedded_SLOW_Test extends AbstractTransactionalJUnit4Sprin
   static final Logger log = LoggerFactory.getLogger(UserDao8Embedded_SLOW_Test.class);
 
   @Resource
-private UserDao userDao;
+  private UserDao userDao;
 
   @Override
   @Resource(name = "dataSource")
@@ -47,9 +49,9 @@ private UserDao userDao;
 
   @Before
   public void setup() throws Exception {
-      boolean continueOnErrorTrue = true;
-      boolean continueOnErrorFalse= false;
-      executeSqlScript("classpath:user_1drop.sql", continueOnErrorTrue);
+    boolean continueOnErrorTrue = true;
+    boolean continueOnErrorFalse = false;
+    executeSqlScript("classpath:user_1drop.sql", continueOnErrorTrue);
     executeSqlScript("classpath:user_2create.sql", continueOnErrorFalse);
     executeSqlScript("classpath:user_3insert.sql", continueOnErrorFalse);
   }
@@ -62,16 +64,16 @@ private UserDao userDao;
 
 
   @Test
-  public void findUserByUsername()    {
+  public void findUserByUsername() {
 
-    User credmond =userDao.findUserByUsername("credmond");
-    log.info("foundUser "+credmond);
+    User credmond = userDao.findUserByUsername("credmond");
+    log.info("foundUser " + credmond);
     assertNotNull(credmond);
     assertEquals(1L, credmond.getId().longValue());
   }
 
   @Test
-  public void createUser()    {
+  public void createUser() {
     User user = new User();
     String expectedUserName = "btest";
     user.setUserName(expectedUserName);
@@ -81,8 +83,8 @@ private UserDao userDao;
 
     userDao.createUser(user);
 
-    User foundUser =userDao.findUserByUsername(expectedUserName);
-    log.info("foundUser "+foundUser);
+    User foundUser = userDao.findUserByUsername(expectedUserName);
+    log.info("foundUser " + foundUser);
     assertNotNull(foundUser);
     assertEquals(expectedUserName, foundUser.getUserName());
 
@@ -90,10 +92,10 @@ private UserDao userDao;
   }
 
   @Test
-  public void readUser()    {
+  public void readUser() {
 
-    User user =userDao.readUser(1);
-    log.info("foundUser "+user);
+    User user = userDao.readUser(1);
+    log.info("foundUser " + user);
     assertNotNull(user);
     assertNotNull(user.getId());
 
@@ -101,9 +103,8 @@ private UserDao userDao;
   }
 
 
-
   @Test
-  public void updateJohnSmithUser()    {
+  public void updateJohnSmithUser() {
 
 
     User user = new User();
@@ -114,26 +115,26 @@ private UserDao userDao;
     user.setFirstName("John2");
     user.setLastName("Smith2");
     user.setActiveSince(new Date());
-    log.info("user ob "+user);
-     userDao.updateUser(user);
+    log.info("user ob " + user);
+    userDao.updateUser(user);
 
-    User updatedUser =userDao.readUser(jsmithId);
+    User updatedUser = userDao.readUser(jsmithId);
 
     assertNotNull(updatedUser);
-    assertEquals("John2",updatedUser.getFirstName());
+    assertEquals("John2", updatedUser.getFirstName());
 
   }
 
 
   @Test
-  public void deleteTempUser()    {
+  public void deleteTempUser() {
 
     // 1 create a user
-       userDao.createUser(new User.Builder().userName("temp").firstName("tem").lastName("porary").build());
+    userDao.createUser(new User.Builder().userName("temp").firstName("tem").lastName("porary").build());
 
     // 2 verify it's created
     User tempBefore = userDao.findUserByUsername("temp");
-    assertEquals("temp",tempBefore.getUserName());
+    assertEquals("temp", tempBefore.getUserName());
 
     // 3 delete that user
     userDao.deleteUser(tempBefore);
@@ -144,19 +145,18 @@ private UserDao userDao;
     assertNull(tempAfter);
 
 
-
   }
 
 
   @Test
-  public void findAll()    {
+  public void findAll() {
     log.info("userDao " + userDao);
     List<User> users = userDao.findAll();
     assertNotNull(users);
     assertTrue(users.size() > 0);
     for (User user : users) {
-         System.out.println("User "+user);
-      }
+      System.out.println("User " + user);
+    }
   }
 
 

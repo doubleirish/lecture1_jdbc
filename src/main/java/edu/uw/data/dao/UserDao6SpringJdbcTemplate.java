@@ -87,6 +87,7 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
     String sql =
         "SELECT u.id, u.user_name, u.first_name ,u.last_name, u.active_since FROM Users u ORDER BY u.id ";
     List<User> users = jdbcTemplate.query(sql, new SimpleUserRowMapper());
+    // could also use FullUserRowMapper with the right multi-join SQL
     return users;
   }
 
@@ -96,9 +97,8 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
   @Override
   public void createUser(User user) {
     // TODO no boilerplate setup
-    String sql = "INSERT INTO USERS  " +
-        "( USER_NAME, first_name, last_name, ACTIVE_SINCE) " +
-        "VALUES ( ?, ?, ?,?)";
+    String sql = "INSERT INTO USERS  ( USER_NAME, first_name, last_name, ACTIVE_SINCE) "
+                           + "VALUES ( ?,          ?,          ?,        ?)";
     jdbcTemplate.update(sql, user.getUserName(),  // varargs method
         user.getFirstName(),
         user.getLastName(),
@@ -189,20 +189,11 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
     namedParameterJdbcTemplate.update(sql, map);
   }
 
-  // building a map of named parameters can be tedious.
-  // the following method shows how to use goolge guava ImmutableMap utility to simplify the map construction further,
-//  public void updateUser_namedParameterGuava(User user) {
-//    String sql = "UPDATE user set first_name = :first ,last_name = :last where id = :id";
-//    Map<String, Object> map = ImmutableMap.of("first", user.getFirstName(),
-//        "last", user.getLastName(),
-//        "id", user.getId());
-//
-//    namedParameterJdbcTemplate.update(sql, map);
-//  }
+
 
 
   public List<User> findAll() {
-    // This is a successful attempt to map one-to-many relationships that we first tried  UserDao5OneTomany class
+    // This is a successful attempt to map one-to-many relationships that we first tried and failed in the UserDao5OneToMany class
 
     Map<Integer, User> userMap = new TreeMap<>();
     String sql =
@@ -215,7 +206,8 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
             " ORDER BY u.id ";
 
 
-    List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql); //TODO replace with ResultSetExtractor
+    List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+    //TODO the mapping below isn't reusable . this can be solved with a ResultSetExtractor (see later)
 
     for (Map row : rows) {
       log.debug("ROW: " + row);
@@ -298,11 +290,10 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
   }
 
 
-  // if we have lots of queries that all map user results in the same wasy
-  //then we can factor this row-to-object mapping logic into common code
-  // that can be used in multiple places.
+  // if we have lots of queries like findUserByUserName() and findAll() that all map user results in the same way
+  // then we can factor out this common row-to-object mapping logic into a single location.
+  // This logic can  then easily be reused in multiple places.
   public class SimpleUserRowMapper implements RowMapper<User> {
-
     @Override
     public User mapRow(ResultSet rs, int rowNumber) throws SQLException {
       User u = new User();
@@ -315,11 +306,12 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
     }
   }
 
+
   public class FullUserRowMapper implements RowMapper<User> {
 
     @Override
     public User mapRow(ResultSet rs, int line) throws SQLException {
-      UserResultSetExtractor extractor = new UserResultSetExtractor();
+      UserResultSetExtractor extractor = new UserResultSetExtractor(); // also maps addres and phone info.
       return (User) extractor.extractData(rs);
     }
    }
