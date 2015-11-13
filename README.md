@@ -220,6 +220,8 @@ click on the vertical "Drivers" tab .
 if you see a red (x) symbol next to the "Apache Derby Client" driver then it means that driver is not yet installed.
 to install the driver, otherwise you can skip to the "create Alias" step
 
+https://cloud.githubusercontent.com/assets/9968550/11138674/1d0ddb78-897a-11e5-9950-cf3de1a043d7.png
+
 ## Install  Derby Client Driver
 
 - select the   "Apache Derby Client" entry and click the pencil icon to edit
@@ -227,6 +229,8 @@ to install the driver, otherwise you can skip to the "create Alias" step
 - Click on “Add” and select the <DERBY_HOME>\lib\derbyClient.jar
 - In the "Class Name"" dropdown select "org.apache.derby.jdbc.ClientDriver"" and then click the OK Button
 - There should now be a blue tick mark in front of the Apache Derby Client driver.
+- 
+https://cloud.githubusercontent.com/assets/9968550/11138666/11858a8a-897a-11e5-9faf-73deed19ff05.png
 
 ## Create Alias
 In Squirrel An "Alias" is simply a nickname to wrap up the connection properties used to connect to a database
@@ -262,7 +266,7 @@ secondly the  create=true parameter will create a set of database files at the D
 - Open up a console and change directories to your <DERBY_DATA_DIR>  you used e.g
 c:\derbydata and you should see a bunch of files there.
 
-
+https://cloud.githubusercontent.com/assets/9968550/11138664/0d34de40-897a-11e5-8a46-9063bd94811b.png
 
 ## Connect To database from Sql Squirrel Client
 At this point we can make a connection to Derby using
