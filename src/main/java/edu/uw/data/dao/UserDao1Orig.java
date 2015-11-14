@@ -21,7 +21,7 @@ public class UserDao1Orig extends AbstractUserDao implements UserDao {
     public  List<User>  findAll()
     {
 
-      Properties prop = loadJdbcProperties("jdbc.properties");
+      Properties prop = DataSourceHelper.loadJdbcProperties("jdbc.properties");
 
 
       String baseurl = prop.getProperty("jdbc.url");

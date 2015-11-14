@@ -23,7 +23,7 @@ public class UserDao2Try extends AbstractUserDao  implements UserDao
   public  List<User>  findAll()
     {
       List<User> users = new ArrayList<>();
-      Properties prop = loadJdbcProperties("jdbc.properties");
+      Properties prop = DataSourceHelper.loadJdbcProperties("jdbc.properties");
       String baseurl = prop.getProperty("jdbc.url");
 
       //hand build the database connection url

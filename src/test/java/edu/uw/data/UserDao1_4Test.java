@@ -1,15 +1,9 @@
 package edu.uw.data;
 
 
-import edu.uw.data.dao.AbstractUserDao;
-import edu.uw.data.dao.UserDao;
-import edu.uw.data.dao.UserDao1Orig;
-import edu.uw.data.dao.UserDao2Try;
-import edu.uw.data.dao.UserDao3DS;
-import edu.uw.data.dao.UserDao4OneToOne;
+import edu.uw.data.dao.*;
 import edu.uw.data.model.User;
 import org.apache.derby.jdbc.ClientDataSource;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,7 +14,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for our first 4 Dao findAll() implementations.
@@ -28,14 +21,14 @@ import static org.junit.Assert.assertTrue;
  */
 public class UserDao1_4Test {
 
-  private ClientDataSource remoteDerbyDataSource;
+  private static ClientDataSource remoteDerbyDataSource;
 
   @BeforeClass  // once per test class
-    public void setup() {
+    public static void setup() {
       remoteDerbyDataSource = new ClientDataSource();
 
       // load properties from a file
-      Properties props = AbstractUserDao.loadJdbcProperties("jdbc.properties");
+      Properties props = DataSourceHelper.loadJdbcProperties("jdbc.properties");
       String username = props.getProperty("jdbc.username");
       String password = props.getProperty("jdbc.password");
       String serverName = props.getProperty("server.name");

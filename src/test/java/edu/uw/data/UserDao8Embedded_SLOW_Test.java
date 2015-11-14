@@ -20,10 +20,7 @@ import javax.sql.DataSource;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * this test explictly cleans out and sets up test data in the database using the setup() call before calling each test method.
