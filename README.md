@@ -1,6 +1,6 @@
 [![Build Status](https://jenkins-irishred.rhcloud.com/buildStatus/icon?job=jdbc)](https://jenkins-irishred.rhcloud.com/job/jdbc)
 
-# lecture1_jdbc (Spring Boot and Java Config)
+# lecture1_jdbc (Xml Config)
 This lecture will show how to setup and run a Database (Apache Derby aka JavaDB  )
 , populate it with data
 and use a separate Java based client application to connect to it and execute SQL queries
