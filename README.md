@@ -16,7 +16,9 @@ and finish up with an example using Spring's JdbcTemplate.
 
 
 
-The Java Client Application used a Maven based build file ,with some Spring boot dependencies to simplify the number of direct dependencies.
+The Java Client Application used a Maven based build file ,
+with some Spring boot dependencies to simplify the number of direct dependencies.
+we use Spring config annotations to build the spring configuration 
 
 # Client Application
 Each of the JDBC usage examples contains a corresponding Junit test so we can run it.
