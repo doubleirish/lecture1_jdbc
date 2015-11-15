@@ -17,6 +17,7 @@ import java.util.Set;
 /**
  * JDBC CRUD with some attempts at building a populated USER-ADDRESS-PHONE domain object graph
  */
+
 public class UserDao5JdbcCrud extends AbstractUserDao implements UserDao {
   static final Logger log = LoggerFactory.getLogger(UserDao5JdbcCrud.class);
   private DataSource dataSource = null;

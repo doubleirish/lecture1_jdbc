@@ -1,6 +1,8 @@
 package edu.uw.data;
 
 
+import edu.uw.config.EmbeddedTestDataSourceInit;
+import edu.uw.data.config.AppConfig;
 import edu.uw.data.dao.UserDao;
 import edu.uw.data.dao.UserDao6SpringJdbcTemplate;
 import edu.uw.data.model.User;
@@ -9,9 +11,11 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -30,11 +34,14 @@ import static org.junit.Assert.*;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
-    "classpath:/datasource-embedded-init.xml"})
-@Transactional(transactionManager = "txManager")
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
+    classes = {
+        AppConfig.class
+        ,EmbeddedTestDataSourceInit.class
+    })
+@Transactional(transactionManager = "transactionManager")
 @Rollback(false)   // don't really need to rollback as we reinitialize on test startup
-
+@ActiveProfiles("dev")
 public class UserDao9EmbeddedInitTest extends AbstractTransactionalJUnit4SpringContextTests {
 
   static final Logger log = LoggerFactory.getLogger(UserDao9EmbeddedInitTest.class);
@@ -61,7 +68,7 @@ private UserDao userDao;
   @Test
   public void createUser()    {
     User user = new User();
-    String expectedUserName = "btest";
+    String expectedUserName = ("btest"+System.currentTimeMillis()).substring(0,15);
     user.setUserName(expectedUserName);
     user.setFirstName("Bob");
     user.setLastName("Test");
@@ -126,7 +133,7 @@ private UserDao userDao;
     //
     // 1. Create a user
     //
-    String tempUsername = "unittest";
+    String tempUsername = ("test"+System.currentTimeMillis()).substring(0,15);
     User user  = new User.Builder().userName(tempUsername).firstName("delete").lastName("me").build();
     userDao.createUser(user);
 

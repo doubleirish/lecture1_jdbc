@@ -1,11 +1,11 @@
 package edu.uw.data.app;
+
 import edu.uw.data.dao.UserDao;
 import edu.uw.data.model.User;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
 
@@ -31,10 +31,10 @@ public class App7UsersSpring
 
   static final Logger log = LoggerFactory.getLogger(App7UsersSpring.class);
 
-  public static void mainExample(String[] args) {
+  public static void main(String[] args) {
     log.info("Initializing Spring context.");
 
-    ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/applicationContext.xml");
+    ApplicationContext applicationContext = new AnnotationConfigApplicationContext("edu.uw");
 
     log.info("Spring context initialized.");
 

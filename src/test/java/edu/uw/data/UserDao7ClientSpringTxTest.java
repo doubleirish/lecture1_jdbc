@@ -1,17 +1,19 @@
 package edu.uw.data;
 
 
+import edu.uw.config.DataSourceTestConfig;
+import edu.uw.data.config.AppConfig;
 import edu.uw.data.dao.UserDao;
 import edu.uw.data.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -21,11 +23,18 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 
-@Transactional(transactionManager = "txManager")
-@Rollback
+//@Transactional(transactionManager = "txManager")
+//@Rollback
 
-@ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
-    "classpath:/datasource-client-test.xml"})
+
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
+    classes = {
+        AppConfig.class
+        , DataSourceTestConfig.class,
+        // DataSourceStandaloneConfig.class
+    })
+
+@ActiveProfiles("dev")
 public class UserDao7ClientSpringTxTest extends AbstractTransactionalJUnit4SpringContextTests {
 
   static final Logger log = LoggerFactory.getLogger(UserDao7ClientSpringTxTest.class);

@@ -1,15 +1,21 @@
 package edu.uw.data;
 
 
+import edu.uw.config.EmbeddedTestDataSourceInit;
+import edu.uw.data.config.AppConfig;
 import edu.uw.data.dao.UserDao;
 import edu.uw.data.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -21,25 +27,30 @@ import static org.junit.Assert.*;
 
 /**
  * Unit test for simple App.
- *  TODO some of  tests will work once and then fail horribly. Why ?
+ * TODO some of  tests will work once and then fail horribly. Why ?
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/userapp-spring.xml",
-    "classpath:/datasource-client-test.xml"})
-
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
+    classes = {
+         AppConfig.class
+        ,EmbeddedTestDataSourceInit.class,
+        // DataSourceStandaloneConfig.class
+    })
+@Transactional(transactionManager = "transactionManager")
+@Rollback
+@ActiveProfiles("dev")
 public class UserDao6Spring_BAD_Test extends AbstractJUnit4SpringContextTests {
 
   static final Logger log = LoggerFactory.getLogger(UserDao6Spring_BAD_Test.class);
 
   @Resource
-private UserDao userDao;
-
+  private UserDao userDao;
 
 
   @Test
-  public void createUser()    { // TODO Trying to create the same exact user twice would fail, hence the random username
+  public void createUser() { // TODO Trying to create the same exact user twice would fail, hence the random username
     User user = new User();
-    String expectedUserName = ("NEW" + System.currentTimeMillis()).substring(0,14);
+    String expectedUserName = ("NEW" + System.currentTimeMillis()).substring(0, 14);
     user.setUserName(expectedUserName);
     user.setFirstName("Bob");
     user.setLastName("Test");
@@ -47,19 +58,19 @@ private UserDao userDao;
 
     userDao.createUser(user);
 
-    User foundUser =userDao.findUserByUsername(expectedUserName);
-    log.info("foundUser "+foundUser);
-    assert foundUser !=null ;
+    User foundUser = userDao.findUserByUsername(expectedUserName);
+    log.info("foundUser " + foundUser);
+    assert foundUser != null;
     assertEquals(expectedUserName, foundUser.getUserName());
 
 
   }
 
   @Test
-  public void readUser()    {
+  public void readUser() {
 
-    User user =userDao.readUser(1);
-    log.info("foundUser "+user);
+    User user = userDao.readUser(1);
+    log.info("foundUser " + user);
     assertNotNull(user);
     assertNotNull(user.getId());
 
@@ -67,9 +78,8 @@ private UserDao userDao;
   }
 
 
-
   @Test
-  public void updateJohnSmithUser()    {
+  public void updateJohnSmithUser() {
 
     // TODO can anyone spot any problems here ?
     User user = new User();
@@ -80,28 +90,28 @@ private UserDao userDao;
     user.setFirstName("John2");
     user.setLastName("Smith2");
     user.setActiveSince(new Date());
-    log.info("user ob "+user);
-     userDao.updateUser(user);
+    log.info("user ob " + user);
+    userDao.updateUser(user);
 
-    User updatedUser =userDao.readUser(jsmithId);
+    User updatedUser = userDao.readUser(jsmithId);
 
     assertNotNull(updatedUser);
-    assertEquals("John2",updatedUser.getFirstName());
+    assertEquals("John2", updatedUser.getFirstName());
 
   }
 
 
   @Test
-  public void deleteTempUser()    { //one implementation of repeatable mutable tests
+  public void deleteTempUser() { //one implementation of repeatable mutable tests
 
     // 1 create a user
     //TODO FYI also usually not a good idea to test a method using another method for setup
-    String userName = ("TEMP" + System.currentTimeMillis()).substring(0,14);  // random user name
-       userDao.createUser(new User.Builder()
-           .userName(userName)
-           .firstName("tem")
-           .lastName("porary")
-           .build());
+    String userName = ("TEMP" + System.currentTimeMillis()).substring(0, 14);  // random user name
+    userDao.createUser(new User.Builder()
+        .userName(userName)
+        .firstName("tem")
+        .lastName("porary")
+        .build());
 
     // 2.a verify user created
     User tempUser = userDao.findUserByUsername(userName);
@@ -112,37 +122,36 @@ private UserDao userDao;
 
     // 4 verify it's gone
     User tempAfter = userDao.findUserByUsername(userName);
-    assert tempAfter==null;
+    assert tempAfter == null;
   }
 
 
   @Test
-  public void findAll()    {
+  public void findAll() {
     log.info("userDao " + userDao);
     List<User> users = userDao.findAll();
     assertNotNull(users);
     assertTrue(users.size() > 0);
     for (User user : users) {
-         System.out.println("User "+user);
-      }
+      System.out.println("User " + user);
+    }
   }
 
 
   @Test
-  public void findUserByUsername()    {
+  public void findUserByUsername() {
 
-    User credmond =userDao.findUserByUsername("credmond");
-    log.info("foundUser "+credmond);
+    User credmond = userDao.findUserByUsername("credmond");
+    log.info("foundUser " + credmond);
     assertNotNull(credmond);
     assertEquals(1L, credmond.getId().longValue());
   }
 
   @Test
-  public void countUsers()    {
+  public void countUsers() {
     int countUsers = userDao.countUsers();
-    assertThat(countUsers,greaterThan(0));
+    assertThat(countUsers, greaterThan(0));
   }
-
 
 
 }

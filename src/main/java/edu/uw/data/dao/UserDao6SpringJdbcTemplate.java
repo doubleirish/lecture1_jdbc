@@ -11,7 +11,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,6 +29,7 @@ import java.util.*;
  * Modern Production code would tend to favour the use of Hibernate or Mybatis,
  * but JdbcTemplates are still used quite often in Test data setups in tests
  */
+@Repository("userDao")
 public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserDao {
 
   static final Logger log = LoggerFactory.getLogger(UserDao6SpringJdbcTemplate.class);
@@ -41,6 +44,7 @@ public class UserDao6SpringJdbcTemplate extends AbstractUserDao implements UserD
 
   // when we inject the datasource we can setup the jdbcTemplates.
   // we would typically only need one template we're setting up both variants just for illustrative purposes.
+  @Resource
   public void setDataSource(DataSource dataSource) {
     this.dataSource = dataSource;
     this.jdbcTemplate = new JdbcTemplate(dataSource);

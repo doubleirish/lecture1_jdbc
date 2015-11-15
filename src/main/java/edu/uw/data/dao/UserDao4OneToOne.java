@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * JDBC: building a more complex User-Address domain object in one pass
  */
+
 public class UserDao4OneToOne extends AbstractUserDao  implements UserDao {
 
   private DataSource dataSource = null;
