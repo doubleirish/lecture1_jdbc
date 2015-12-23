@@ -1,60 +1,69 @@
 [![Build Status](https://jenkins-irishred.rhcloud.com/buildStatus/icon?job=jdbc)](https://jenkins-irishred.rhcloud.com/job/jdbc)
 
 # lecture1_jdbc (Xml Config)
-This lecture will show how to setup and run a Database (Apache Derby aka JavaDB  )
-, populate it with data
-and use a separate Java based client application to connect to it and execute SQL queries
-using the JDBC API .
-
-JDBC is a decades old API and  it's usage has changed(improved!) a lot througout the years.
-We'll use code samples so you can recognise  the different types of legacy JDBC code out there
-
-Finally we'll look at more modern streamlined usages of JDBC
-and finish up with an example using Spring's JdbcTemplate.
+This lecture will show how to 
+- setup and run a Database (Apache Derby aka JavaDB  )
+- populate that database with some test data
+- build a java, JDBC based client application to connect to your database server and execute SQL operations against it.
+- write unit tests for you Data Access Object (DAO) Layer 
 
 
+JDBC is a decades old API and  it's usage has changed (improved!) a lot througout the years.
+We'll use a variety of code samples so you can recognise  the different types of legacy JDBC code out there.
+
+Finally we'll look at more modern streamlined usages of JDBC, and finish up with an example using Spring's JdbcTemplate.
+
+Writing Junit integration Tests for DAOs can be tricky as the Database state can change after we run a test, potentially affecting other tests or subsequent runs of our test suite.  We'll show a how to resovle this mutability problem using the following two techniques :-
+- initialze our database state into a known good state for every test
+- use rollback the database to it's state before we ran our test  
 
 
 
-The Java Client Application used a Maven based build file ,with some Spring boot dependencies to simplify the number of direct dependencies.
+The Java Client Application outlined in this github repository uses a Maven based build file (pom.xml).  
+The maven build file relies on some Spring Boot dependencies to simplify the number of direct dependencies.
 
-# Client Application
-Each of the JDBC usage examples contains a corresponding Junit test so we can run it.
+# Java Client Application
+The application is composed of a number of DAO implementations using either JDBC directly or Spring JdbcTemplates 
+Each of the DAO code examples has a corresponding Junit test so we can execute the DAO operations for querying or modifying the database.
 
 Some of the unit tests require a running database service and so will require some setup as described below.
 
-Other tests with "Embedded" in the name are designed to create a local derby database directory in the working directory
-and start an embedded derby database service.
+Other tests with "Embedded" in the name are designed to create a local Derby database directory in the working directory
+and start an embedded Derby database service within the Test.
 These embedded tests are designed to self-populate the temporary database at test startup time
-and so don't require a running database to be already setup.
+and so don't require a separately running database to be already setup.
 
 
 
 
 ### Class UserDao1Orig
-- an old,old school JDBC implementation with embedded connection params and plaintext passwords . never use in production !!  notice all the painful boiler plate to clean up resources.
+- This is an example of very ,old school JDBC implementation with embedded connection params and plaintext passwords. 
+You should never use something like this in production !!  Notice also all the painful try-catch boiler plate to clean up resources.
 
 ### Class UserDao2Try
-- an improvement which uses the try-with-resources to auto-close Connections etc
+- This is a slight an improvement over the previous example which uses the Java 7 try-with-resources feature  to auto-close Connections etc
 
 ### Class UserDao3D
-- Uses an externally defined datasource so we don't have the database username,password defined in our code.
+- This example Uses an externally defined datasource so we don't have the database username and password defined in our code.
 
 ### Class UserDao4OneToOne
-- loading from a single Table to a single Class is easy , but what happens when we want to map a query to multiple objects
-                        
-- in this case we map a HAS-A or one-to-one relationship e.g User has-a Address
+-   This example shows how to build  a java object graph modeling  two tables with a one-to-one relationship.
+- in this example  we model  a HAS-A or one-to-one relationship e.g User has-a Address
 
 ### Class UserDao5JdbcCrud
-- JDBC CRUD with some attempts at building a populated USER-ADDRESS-PHONE domain object graph
+- This example shows how to implement JDBC based CRUD operations (create,read, update,delete). 
+
 
 ### Class UserDao5OneToMany
-- we show how JDBC is not great at loading one-to-many relationships  e.g a User has many phones
+- we show how JDBC is not so great at loading one-to-many relationships  e.g a User has many phones
+- We also with illustrate the complexities occur when atempting to model in java tables with one-to-many relationships 
+- in this example we attempt to model a "User HAS-MANY Phones"  relationship.
+- The complexity with using raw JDBC when mapping these relationships in Java is one reason why the Hibernate/JPA and Mybatis frameworks are so popular.
 
-### Class UserDao5OneToMany
-- Spring JdbcTemplates eliminate low level boilerplate like Connections and prepareStaments,
-    they also assist with checked exceptions. Classes like the ResultSetExtractor help us centralize
-    and reuse the mapping from Sql result sets into Java classes.
+### Class UserDao6SpringJdbcTemplate
+- In this example we use Spring's  JdbcTemplates classes to eliminate a lot of low level boilerplate like Connections and PrepareStatment setup and checked exception handling we previously had to write for JDBC based DAOs.
+- we show how the   ResultSetExtractor class can help us help us centralize
+    and reuse the   logic used to map from Sql result sets into our specific Java business domain objects.
 
 
 # Client Server Setup.
